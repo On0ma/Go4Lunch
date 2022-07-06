@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.firebase.ui.auth.AuthUI;
@@ -33,9 +34,17 @@ public class LoginActivity extends BaseActivity<ActivityMainBinding> {
         super.onCreate(savedInstanceState);
         mUserViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(UserViewModel.class);
         setupListeners();
-        if (mUserViewModel.isCurrentUserLogged()) {
-            startMapActivity();
-        }
+
+        // Observe if user is logged in to start main activity
+        final Observer<Boolean> userLoggedObserver = new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean) {
+                    startMapActivity();
+                }
+            }
+        };
+        mUserViewModel.isCurrentUserLogged().observe(this, userLoggedObserver);
     }
 
     private void setupListeners(){

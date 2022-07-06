@@ -17,6 +17,7 @@ public class UserViewModel extends ViewModel {
     private final UserRepository mUserRepository;
 
     private MutableLiveData<User> user = new MutableLiveData<>();
+    private MutableLiveData<Boolean> userLoggedBoolean = new MutableLiveData<Boolean>();
 
     public UserViewModel() {
         mUserRepository = UserRepository.getInstance();
@@ -28,8 +29,13 @@ public class UserViewModel extends ViewModel {
         return mUserRepository.getCurrentUser();
     }
 
-    public Boolean isCurrentUserLogged() {
+    private Boolean getUserLoggedIn() {
         return (this.getCurrentUser() != null);
+    }
+
+    public LiveData<Boolean> isCurrentUserLogged() {
+        userLoggedBoolean.setValue(getUserLoggedIn());
+        return userLoggedBoolean;
     }
 
 
@@ -42,7 +48,7 @@ public class UserViewModel extends ViewModel {
     }
 
     public LiveData<User> getUser() {
-        this.user.setValue(createUser());
+        user.setValue(createUser());
         return user;
     }
 
