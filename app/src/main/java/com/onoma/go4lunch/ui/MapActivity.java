@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -26,6 +27,7 @@ import com.onoma.go4lunch.R;
 import com.onoma.go4lunch.ViewModelFactory;
 import com.onoma.go4lunch.databinding.ActivityMapBinding;
 import com.onoma.go4lunch.databinding.HeaderNavigationDrawerBinding;
+import com.onoma.go4lunch.model.User;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
 public class MapActivity extends BaseActivity<ActivityMapBinding> {
@@ -60,9 +62,18 @@ public class MapActivity extends BaseActivity<ActivityMapBinding> {
         mUserViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(UserViewModel.class);
         handleDrawerNav();
         handleBottomNav();
-        updateUIWithUserData();
+
+        // Observe the liveData of the User
+        final Observer<User> userObserver = new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                setUserData(user);
+            }
+        };
+        mUserViewModel.getUser().observe(this, userObserver);
     }
 
+    // Open the drawer on click on the menu button
     private void handleDrawerNav() {
         binding.topAppBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,14 +97,17 @@ public class MapActivity extends BaseActivity<ActivityMapBinding> {
         });
     }
 
+    // Show Selected Lunch activity
     private void displayLunch() {
         Log.i(null, "LUNCH");
     }
 
+    // Show settings activity
     private void displaySettings() {
         Log.i(null, "SETTINGS");
     }
 
+    // Logout user and send back to the login page
     private void logout() {
         Log.i(null, "LOGOUT");
         mUserViewModel.signOut(this).addOnSuccessListener(aVoid -> {
@@ -101,31 +115,27 @@ public class MapActivity extends BaseActivity<ActivityMapBinding> {
         });
     }
 
+    // TODO optimize loading of fragment
+    // Load a different fragment for each bottom tab
     private void handleBottomNav() {
         binding.bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    // Load the map view
                     case R.id.nav_map:
-                        Log.i("NAV", "MAP");
                         currentFragment = new MapFragment();
-                        ft = getSupportFragmentManager().beginTransaction();
-                        ft.replace(R.id.fragment_container_view, currentFragment);
-                        ft.commit();
+                        handleFragmentLoading(currentFragment);
                         return true;
+                    // Load the list view
                     case R.id.nav_list:
-                        Log.i("NAV", "LIST");
                         currentFragment = new ListFragment();
-                        ft = getSupportFragmentManager().beginTransaction();
-                        ft.replace(R.id.fragment_container_view, currentFragment);
-                        ft.commit();
+                        handleFragmentLoading(currentFragment);
                         return true;
+                    // Load the workers view
                     case R.id.nav_workmates:
-                        Log.i("NAV", "WORKMATES");
                         currentFragment = new WorkmatesFragment();
-                        ft = getSupportFragmentManager().beginTransaction();
-                        ft.replace(R.id.fragment_container_view, currentFragment);
-                        ft.commit();
+                        handleFragmentLoading(currentFragment);
                         return true;
                 }
                 return false;
@@ -133,16 +143,13 @@ public class MapActivity extends BaseActivity<ActivityMapBinding> {
         });
     }
 
-    private void updateUIWithUserData(){
-        // TODO enlever le if
-        if(mUserViewModel.isCurrentUserLogged()){
-            FirebaseUser user = mUserViewModel.getCurrentUser();
-
-            setUserData(user);
-        }
+    private void handleFragmentLoading(Fragment currFrag) {
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_container_view, currFrag);
+        ft.commit();
     }
 
-    private void setUserData (FirebaseUser user){
+    private void setUserData (User user){
         // Get & Set the user picture
         Uri profilePictureUrl = user.getPhotoUrl();
         if (profilePictureUrl != null) {
@@ -154,7 +161,7 @@ public class MapActivity extends BaseActivity<ActivityMapBinding> {
 
         //Get email & username from User
         String email = TextUtils.isEmpty(user.getEmail()) ? getString(R.string.info_no_email_found) : user.getEmail();
-        String username = TextUtils.isEmpty(user.getDisplayName()) ? getString(R.string.info_no_username_found) : user.getDisplayName();
+        String username = TextUtils.isEmpty(user.getName()) ? getString(R.string.info_no_username_found) : user.getName();
 
         // Set header text
         headerBinding.drawerName.setText(username);
