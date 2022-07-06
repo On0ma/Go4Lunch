@@ -2,8 +2,10 @@ package com.onoma.go4lunch.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -13,25 +15,26 @@ import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.snackbar.Snackbar;
 import com.onoma.go4lunch.R;
 import com.onoma.go4lunch.ViewModelFactory;
-import com.onoma.go4lunch.databinding.ActivityMainBinding;
+import com.onoma.go4lunch.databinding.ActivityLoginBinding;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
 import java.util.Collections;
 import java.util.List;
 
-public class LoginActivity extends BaseActivity<ActivityMainBinding> {
+public class LoginActivity extends AppCompatActivity {
+
+    private ActivityLoginBinding binding;
 
     private static final int RC_SIGN_IN = 123;
     private UserViewModel mUserViewModel;
 
     @Override
-    ActivityMainBinding getViewBinding() {
-        return ActivityMainBinding.inflate(getLayoutInflater());
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+
         mUserViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(UserViewModel.class);
         setupListeners();
 

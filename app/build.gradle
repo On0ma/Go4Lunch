@@ -47,4 +47,5 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
     implementation 'com.google.firebase:firebase-auth'
 
+    implementation 'com.mapbox.maps:android:10.6.0'
 }

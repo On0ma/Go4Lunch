@@ -11,6 +11,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -25,22 +26,19 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseUser;
 import com.onoma.go4lunch.R;
 import com.onoma.go4lunch.ViewModelFactory;
-import com.onoma.go4lunch.databinding.ActivityMapBinding;
+import com.onoma.go4lunch.databinding.ActivityMainBinding;
 import com.onoma.go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.onoma.go4lunch.model.User;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
-public class MainActivity extends BaseActivity<ActivityMapBinding> {
+public class MainActivity extends AppCompatActivity {
 
     private UserViewModel mUserViewModel;
 
     Fragment currentFragment;
     FragmentTransaction ft;
 
-    @Override
-    ActivityMapBinding getViewBinding() {
-        return ActivityMapBinding.inflate(getLayoutInflater());
-    }
+    private ActivityMainBinding binding;
 
     View headerView;
     HeaderNavigationDrawerBinding headerBinding;
@@ -48,6 +46,9 @@ public class MainActivity extends BaseActivity<ActivityMapBinding> {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
         // Set Default Fragment
         currentFragment = new MapFragment();
