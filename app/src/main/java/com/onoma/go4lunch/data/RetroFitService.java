@@ -1,17 +1,23 @@
 package com.onoma.go4lunch.data;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mapbox.api.tilequery.MapboxTilequery;
+import com.onoma.go4lunch.R;
+
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RetroFitService {
+public class RetroFitService extends AppCompatActivity {
 
     private static final Gson gson = new GsonBuilder().setLenient().create();
     private static final OkHttpClient httpClient = new OkHttpClient.Builder().build();
-    private static final String BASE_URL = "https://lz4.overpass-api.de/api/";
+    private static final String BASE_URL = "https://api.mapbox.com/geocoding/v5/";
     private static final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(httpClient)

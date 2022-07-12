@@ -32,9 +32,7 @@ public class ListFragment extends Fragment {
         View view = binding.getRoot();
 
         mRestaurantsViewModel = new ViewModelProvider(requireActivity()).get(RestaurantsViewModel.class);
-        List<RestaurantResponse> restaurantResponseList = mRestaurantsViewModel.getRestaurants();
-
-        Log.i("LIST", String.valueOf(restaurantResponseList));
+        // List<RestaurantResponse> restaurantResponseList = mRestaurantsViewModel.getRestaurants();
 
         return view;
     }

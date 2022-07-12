@@ -1,22 +1,23 @@
 package com.onoma.go4lunch.model;
 
+import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class RestaurantResponse {
 
-    @SerializedName("id")
+    @SerializedName("type")
     @Expose
-    private Integer id;
-    @SerializedName("lat")
+    private String type;
+    @SerializedName("query")
     @Expose
-    private Double lat;
-    @SerializedName("lon")
+    private List<String> query = null;
+    @SerializedName("features")
     @Expose
-    private Double lon;
-    @SerializedName("tags")
+    private List<Feature> features = null;
+    @SerializedName("attribution")
     @Expose
-    private Tags tags;
+    private String attribution;
 
     /**
      * No args constructor for use in serialization
@@ -27,49 +28,49 @@ public class RestaurantResponse {
 
     /**
      *
-     * @param lon
-     * @param id
-     * @param lat
-     * @param tags
+     * @param features
+     * @param query
+     * @param attribution
+     * @param type
      */
-    public RestaurantResponse(Integer id, Double lat, Double lon, Tags tags) {
+    public RestaurantResponse(String type, List<String> query, List<Feature> features, String attribution) {
         super();
-        this.id = id;
-        this.lat = lat;
-        this.lon = lon;
-        this.tags = tags;
+        this.type = type;
+        this.query = query;
+        this.features = features;
+        this.attribution = attribution;
     }
 
-    public Integer getId() {
-        return id;
+    public String getType() {
+        return type;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public Double getLat() {
-        return lat;
+    public List<String> getQuery() {
+        return query;
     }
 
-    public void setLat(Double lat) {
-        this.lat = lat;
+    public void setQuery(List<String> query) {
+        this.query = query;
     }
 
-    public Double getLon() {
-        return lon;
+    public List<Feature> getFeatures() {
+        return features;
     }
 
-    public void setLon(Double lon) {
-        this.lon = lon;
+    public void setFeatures(List<Feature> features) {
+        this.features = features;
     }
 
-    public Tags getTags() {
-        return tags;
+    public String getAttribution() {
+        return attribution;
     }
 
-    public void setTags(Tags tags) {
-        this.tags = tags;
+    public void setAttribution(String attribution) {
+        this.attribution = attribution;
     }
 
 }
