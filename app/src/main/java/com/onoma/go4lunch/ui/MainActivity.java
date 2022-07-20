@@ -63,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
         mUserViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(UserViewModel.class);
         handleDrawerNav();
         handleBottomNav();
+        // Set a different tab by default on launch
+        //binding.bottomNavigation.setSelectedItemId(R.id.nav_list);
 
         // Observe the liveData of the User
         final Observer<User> userObserver = new Observer<User>() {

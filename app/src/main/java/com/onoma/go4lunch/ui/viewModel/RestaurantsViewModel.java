@@ -22,11 +22,6 @@ public class RestaurantsViewModel extends ViewModel {
         mRestaurantRepository = RestaurantRepository.getInstance();
     }
 
-
-   /* public void getRestaurantsList() {
-        mRestaurantRepository.performSearch();
-    }*/
-
     public LiveData<List<Restaurant>> getRestaurants() {
         List<Restaurant> result = new ArrayList<>();
         List<Feature> restaurantsData = mRestaurantRepository.getRestaurants();
