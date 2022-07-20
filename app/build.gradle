@@ -48,12 +48,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
 
     implementation 'com.mapbox.maps:android:10.6.0'
+    implementation 'com.mapbox.plugin:maps-locationcomponent:10.6.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-services:6.4.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-core:6.4.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-geojson:6.4.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-turf:6.4.0'
-
-    implementation "com.mapbox.search:mapbox-search-android:1.0.0-beta.32"
 
     implementation("com.google.android.gms:play-services-location:18.0.0")
 }

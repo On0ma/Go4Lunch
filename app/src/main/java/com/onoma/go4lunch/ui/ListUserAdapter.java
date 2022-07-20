@@ -5,39 +5,64 @@ import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.onoma.go4lunch.R;
+import com.onoma.go4lunch.databinding.FragmentListItemBinding;
 import com.onoma.go4lunch.model.Feature;
+import com.onoma.go4lunch.model.Restaurant;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListUserAdapter extends RecyclerView.Adapter<ListUserAdapter.ViewHolder> {
 
-    private List<Feature> restaurantList;
+    private List<Restaurant> restaurantList = new ArrayList<>();
 
-    public ListUserAdapter(List<Feature> restaurantList) {
-        this.restaurantList = restaurantList;
-    }
+    private FragmentListItemBinding itemBinding;
+
+    public ListUserAdapter() { }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.fragment_list_item, parent, false);
-        return new ViewHolder(view);
+        itemBinding = FragmentListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(itemBinding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Feature restaurant = restaurantList.get(position);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Restaurant restaurant = restaurantList.get(position);
+        holder.restaurantName.setText(restaurant.getName());
+        holder.restaurantAdress.setText(restaurant.getAdress());
+        holder.restaurantDistance.setText(String.valueOf(restaurant.getLongitude()));
+    }
+
+    @Override
+    public int getItemCount() {
+        return restaurantList.size();
+    }
+
+    public void setRestaurantList(List<Restaurant> restaurantList) {
+        this.restaurantList = restaurantList;
+        // TODO Mettre à jour avec des méthodes plus spécifiques
+        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        private TextView restaurantName;
+        private TextView restaurantAdress;
+        private TextView restaurantDistance;
 
+        public ViewHolder(FragmentListItemBinding itemBinding) {
+            super(itemBinding.getRoot());
+            restaurantName = itemBinding.fragmentListItemTitle;
+            restaurantAdress = itemBinding.fragmentListItemAdress;
+            restaurantDistance = itemBinding.fragmentListDistance;
+        }
     }
 }

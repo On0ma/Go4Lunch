@@ -13,4 +13,6 @@
     <string name="logout">Logout</string>
     <string name="info_no_username_found">Nom d\'utilisateur inconnu</string>
     <string name="info_no_email_found">Email inconnu</string>
+
+    <string name="user_location_permission_explanation">This app needs location permissions in order to show its functionality.</string>
 </resources>

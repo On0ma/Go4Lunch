@@ -116,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // TODO optimize loading of fragment
     // Load a different fragment for each bottom tab
     private void handleBottomNav() {
         binding.bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
