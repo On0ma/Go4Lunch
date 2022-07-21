@@ -27,6 +27,7 @@ public class RestaurantsViewModel extends ViewModel {
         List<Feature> restaurantsData = mRestaurantRepository.getRestaurants();
         for (Feature restaurant : restaurantsData) {
             Restaurant item = new Restaurant(
+                    restaurantsData.indexOf(restaurant),
                     restaurant.getTextFr(),
                     restaurant.getProperties().getAddress(),
                     restaurant.getProperties().getCategory(),

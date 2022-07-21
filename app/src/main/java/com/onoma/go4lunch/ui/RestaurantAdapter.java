@@ -1,31 +1,30 @@
 package com.onoma.go4lunch.ui;
 
-import android.content.Context;
-import android.text.Layout;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.onoma.go4lunch.R;
 import com.onoma.go4lunch.databinding.FragmentListItemBinding;
-import com.onoma.go4lunch.model.Feature;
 import com.onoma.go4lunch.model.Restaurant;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class ListUserAdapter extends RecyclerView.Adapter<ListUserAdapter.ViewHolder> {
+public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter.ViewHolder> {
 
     private List<Restaurant> restaurantList = new ArrayList<>();
 
     private FragmentListItemBinding itemBinding;
 
-    public ListUserAdapter() { }
+    public RestaurantAdapter() {
+        super(RestaurantAdapter.DIFF_CALLBACK);
+    }
 
     @NonNull
     @Override
@@ -36,22 +35,30 @@ public class ListUserAdapter extends RecyclerView.Adapter<ListUserAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Restaurant restaurant = restaurantList.get(position);
+        holder.bindTo(getItem(position));
+        /*Restaurant restaurant = restaurantList.get(position);
         holder.restaurantName.setText(restaurant.getName());
         holder.restaurantAdress.setText(restaurant.getAdress());
-        holder.restaurantDistance.setText(String.valueOf(restaurant.getLongitude()));
+        holder.restaurantDistance.setText(String.valueOf(restaurant.getLongitude()));*/
     }
 
-    @Override
-    public int getItemCount() {
-        return restaurantList.size();
-    }
+    public static final DiffUtil.ItemCallback<Restaurant> DIFF_CALLBACK = new DiffUtil.ItemCallback<Restaurant>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Restaurant oldItem, @NonNull Restaurant newItem) {
+            return oldItem.getId() == newItem.getId();
+        }
 
-    public void setRestaurantList(List<Restaurant> restaurantList) {
+        @Override
+        public boolean areContentsTheSame(@NonNull Restaurant oldItem, @NonNull Restaurant newItem) {
+            return oldItem.equals(newItem);
+        }
+    };
+
+    /*public void setRestaurantList(List<Restaurant> restaurantList) {
         this.restaurantList = restaurantList;
         // TODO Mettre à jour avec des méthodes plus spécifiques
         notifyDataSetChanged();
-    }
+    }*/
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView restaurantName;
@@ -63,6 +70,12 @@ public class ListUserAdapter extends RecyclerView.Adapter<ListUserAdapter.ViewHo
             restaurantName = itemBinding.fragmentListItemTitle;
             restaurantAdress = itemBinding.fragmentListItemAdress;
             restaurantDistance = itemBinding.fragmentListDistance;
+        }
+
+        public void bindTo(Restaurant restaurant) {
+            restaurantName.setText(restaurant.getName());
+            restaurantAdress.setText(restaurant.getAdress());
+            restaurantDistance.setText(String.valueOf(restaurant.getLongitude()));
         }
     }
 }

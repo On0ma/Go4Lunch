@@ -12,11 +12,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.onoma.go4lunch.R;
-import com.onoma.go4lunch.ViewModelFactory;
 import com.onoma.go4lunch.databinding.FragmentListBinding;
 import com.onoma.go4lunch.model.Restaurant;
-import com.onoma.go4lunch.model.RestaurantResponse;
 import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 
 import java.util.List;
@@ -38,15 +35,17 @@ public class ListFragment extends Fragment {
         RecyclerView recyclerView = binding.fragmentListRecyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        ListUserAdapter adapter = new ListUserAdapter();
+        RestaurantAdapter adapter = new RestaurantAdapter();
         recyclerView.setAdapter(adapter);
 
         mRestaurantsViewModel = new ViewModelProvider(requireActivity()).get(RestaurantsViewModel.class);
         mRestaurantsViewModel.getRestaurants().observe(getViewLifecycleOwner(), new Observer<List<Restaurant>>() {
             @Override
             public void onChanged(List<Restaurant> restaurants) {
-                adapter.setRestaurantList(restaurants);
+                adapter.submitList(restaurants);
+                Log.i(null, String.valueOf(restaurants));
                 Log.i("Restaurants Observer", "CHANGED");
+                Log.i(null, String.valueOf(adapter.getItemCount()));
             }
         });
         // List<RestaurantResponse> restaurantResponseList = mRestaurantsViewModel.getRestaurants();
