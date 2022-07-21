@@ -18,19 +18,19 @@ public class UserViewModel extends ViewModel {
 
     private MutableLiveData<User> user = new MutableLiveData<>();
     private MutableLiveData<Boolean> userLoggedBoolean = new MutableLiveData<Boolean>();
+    private MutableLiveData<Boolean> signOutListener = new MutableLiveData<>();
 
     public UserViewModel() {
         mUserRepository = UserRepository.getInstance();
     }
 
-
-    // If the user is logged in or not
-    private FirebaseUser getCurrentUser() {
+    // TODO Useless method, check if I can remove
+    /*private FirebaseUser getCurrentUser() {
         return mUserRepository.getCurrentUser();
-    }
+    }*/
 
     private Boolean getUserLoggedIn() {
-        return (this.getCurrentUser() != null);
+        return (mUserRepository.getCurrentUser() != null);
     }
 
     public LiveData<Boolean> isCurrentUserLogged() {
@@ -41,9 +41,9 @@ public class UserViewModel extends ViewModel {
 
     // Create a user from the Firebase User
     private User createUser() {
-        String name = getCurrentUser().getDisplayName();
-        String email = getCurrentUser().getEmail();
-        Uri photo = getCurrentUser().getPhotoUrl();
+        String name = mUserRepository.getCurrentUser().getDisplayName();
+        String email = mUserRepository.getCurrentUser().getEmail();
+        Uri photo = mUserRepository.getCurrentUser().getPhotoUrl();
         return new User(name, email, photo);
     }
 
@@ -54,13 +54,16 @@ public class UserViewModel extends ViewModel {
 
 
     // Handle Sign Out
-    public Task<Void> signOut(Context context) {
-        return mUserRepository.SignOut(context);
+    public LiveData<Boolean> observeSignOut() {
+        return signOutListener;
     }
 
-
-    // Handle deleting account
-    public Task<Void> deleteUser(Context context) {
-        return mUserRepository.deleteUser(context);
+    public void getSignOut(Context context) {
+        mUserRepository.SignOut(context, new UserRepository.UserQuery() {
+            @Override
+            public void signOutResult(boolean signOutResultBool) {
+                signOutListener.setValue(signOutResultBool);
+            }
+        });
     }
 }

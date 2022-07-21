@@ -1,5 +1,7 @@
 package com.onoma.go4lunch.model;
 
+import android.location.Location;
+
 import java.util.Objects;
 
 public class Restaurant {
@@ -66,6 +68,12 @@ public class Restaurant {
 
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    public String getDistance(double posLong, double posLat) {
+        float[] results = new float[3];
+        Location.distanceBetween(this.getLatitude(), this.getLongitude(), posLat, posLong, results);
+        return String.valueOf((int)results[0] + "m");
     }
 
     @Override

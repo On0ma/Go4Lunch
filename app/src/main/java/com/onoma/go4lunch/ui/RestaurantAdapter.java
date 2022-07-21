@@ -19,11 +19,15 @@ import java.util.Objects;
 public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter.ViewHolder> {
 
     private List<Restaurant> restaurantList = new ArrayList<>();
+    private double locationLongitude;
+    private double locationLatitude;
 
     private FragmentListItemBinding itemBinding;
 
-    public RestaurantAdapter() {
+    public RestaurantAdapter(double locationLongitude, double locationLatitude) {
         super(RestaurantAdapter.DIFF_CALLBACK);
+        this.locationLongitude = locationLongitude;
+        this.locationLatitude = locationLatitude;
     }
 
     @NonNull
@@ -60,7 +64,7 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
         notifyDataSetChanged();
     }*/
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView restaurantName;
         private TextView restaurantAdress;
         private TextView restaurantDistance;
@@ -75,7 +79,7 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
         public void bindTo(Restaurant restaurant) {
             restaurantName.setText(restaurant.getName());
             restaurantAdress.setText(restaurant.getAdress());
-            restaurantDistance.setText(String.valueOf(restaurant.getLongitude()));
+            restaurantDistance.setText(restaurant.getDistance(locationLongitude, locationLatitude));
         }
     }
 }

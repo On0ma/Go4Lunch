@@ -13,6 +13,9 @@ public class UserRepository {
 
     private static volatile UserRepository instance;
 
+    private Boolean signOutListener;
+
+
     private UserRepository() { }
 
     public static UserRepository getInstance() {
@@ -28,12 +31,13 @@ public class UserRepository {
         }
     }
 
-    public Task<Void> SignOut(Context context) {
-        return AuthUI.getInstance().signOut(context);
-    }
-
-    public Task<Void> deleteUser(Context context) {
-        return AuthUI.getInstance().delete(context);
+    public void SignOut(Context context, UserQuery callback) {
+        AuthUI.getInstance().signOut(context).addOnSuccessListener(aVoid -> {
+            callback.signOutResult(true);
+        });
+        AuthUI.getInstance().signOut(context).addOnFailureListener(aVoid -> {
+            callback.signOutResult(false);
+        });
     }
 
     @Nullable
@@ -41,4 +45,7 @@ public class UserRepository {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
+    public interface UserQuery {
+        void signOutResult(boolean signOutResultBool);
+    }
 }

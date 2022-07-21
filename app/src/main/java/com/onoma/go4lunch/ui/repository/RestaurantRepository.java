@@ -18,14 +18,16 @@ public class RestaurantRepository {
 
     private static volatile RestaurantRepository instance;
 
-    private final double LONGITUDE = 2.356526;
-    private final double LATITUDE = 48.831351;
+    // TODO supprimer ces 2 variables
+    // private final double LONGITUDE = 2.356526;
+    // private final double LATITUDE = 48.831351;
 
     private final String queryAcessToken = "pk.eyJ1IjoiZW56by1vIiwiYSI6ImNsNTl3c3N3aDEzcmwzZG5zc2J6eGlsMGIifQ.ukP47h-0lgGwCsWKs2aXsg";
     private final String queryCountry = "fr";
     private final String queryLanguage = "fr";
     private final int queryLimit = 10;
-    private final String queryProximity = LONGITUDE + "," + LATITUDE;
+    // TODO supprimer cette variable
+    // private final String queryProximity = LONGITUDE + "," + LATITUDE;
     private final String queryTypes = "poi";
 
     private final RestaurantApi restaurantApi;
@@ -47,25 +49,22 @@ public class RestaurantRepository {
         }
     }
 
-    private List<Feature> RestaurantListData = new ArrayList<>();
-
-    public List<Feature> getRestaurants() {
+    public void getRestaurants(double longitude, double latitude, RestaurantQuery callback) {
+        String queryProximity = longitude + "," + latitude;
         restaurantApi.getRestaurantList(queryAcessToken, queryCountry, queryLanguage, queryLimit, queryProximity, queryTypes).enqueue(new Callback<RestaurantResponse>() {
             @Override
             public void onResponse(Call<RestaurantResponse> call, Response<RestaurantResponse> response) {
-                if (response.isSuccessful()) {
-                    RestaurantListData.addAll(response.body().getFeatures());
-                    Log.i("RESULT", String.valueOf(response.body().getFeatures()));
-                } else {
-                    Log.i("API RESULT", "Something went wrong");
-                }
+                callback.restaurantApiResult(response.body().getFeatures());
             }
-
             @Override
             public void onFailure(Call<RestaurantResponse> call, Throwable t) {
-                Log.e("TAG", "Error occured", t);
+                callback.restaurantApiFailure("Error occured", t);
             }
         });
-        return RestaurantListData;
+    }
+
+    public interface RestaurantQuery {
+        void restaurantApiResult(List<Feature> restaurants);
+        void restaurantApiFailure(String error, Throwable t);
     }
 }

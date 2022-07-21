@@ -1,17 +1,28 @@
 package com.onoma.go4lunch.ui;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -20,6 +31,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
@@ -31,7 +49,10 @@ import com.onoma.go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.onoma.go4lunch.model.User;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+
+    FusedLocationProviderClient mFusedLocationProviderClient;
+    int PERMISSION_ID = 44;
 
     private UserViewModel mUserViewModel;
 
@@ -43,6 +64,12 @@ public class MainActivity extends AppCompatActivity {
     View headerView;
     HeaderNavigationDrawerBinding headerBinding;
 
+    private final double LONGITUDE = 2.356526;
+    private final double LATITUDE = 48.831351;
+
+    private double longitude;
+    private double latitude;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,11 +77,20 @@ public class MainActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        getLastLocation();
+        Log.i("LONGITUDE MAIN", String.valueOf(longitude));
+        Log.i("LATITUDE MAIN", String.valueOf(latitude));
+
+        // Put Location in bundle
+        Bundle bundle = new Bundle();
+        bundle.putDouble("longitude", LONGITUDE);
+        bundle.putDouble("latitude", LATITUDE);
+
         // Set Default Fragment
         currentFragment = new MapFragment();
-        ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_container_view, currentFragment);
-        ft.commit();
+        handleFragmentLoading(currentFragment, bundle);
 
         // Bind the navigation header
         headerView = binding.drawerNavigation.getHeaderView(0);
@@ -62,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         mUserViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(UserViewModel.class);
         handleDrawerNav();
-        handleBottomNav();
+        handleBottomNav(bundle);
         // Set a different tab by default on launch
         //binding.bottomNavigation.setSelectedItemId(R.id.nav_list);
 
@@ -74,6 +110,18 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         mUserViewModel.getUser().observe(this, userObserver);
+
+        // Observe the LiveData of the SignOut
+        final Observer<Boolean> signOutObserver = new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                // if the logout succeed the activity is ended
+                if (aBoolean) {
+                    finish();
+                }
+            }
+        };
+        mUserViewModel.observeSignOut().observe(this, signOutObserver);
     }
 
     // Open the drawer on click on the menu button
@@ -113,13 +161,11 @@ public class MainActivity extends AppCompatActivity {
     // Logout user and send back to the login page
     private void logout() {
         Log.i(null, "LOGOUT");
-        mUserViewModel.signOut(this).addOnSuccessListener(aVoid -> {
-            finish();
-        });
+        mUserViewModel.getSignOut(this);
     }
 
     // Load a different fragment for each bottom tab
-    private void handleBottomNav() {
+    private void handleBottomNav(Bundle bundle) {
         binding.bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -127,17 +173,18 @@ public class MainActivity extends AppCompatActivity {
                     // Load the map view
                     case R.id.nav_map:
                         currentFragment = new MapFragment();
-                        handleFragmentLoading(currentFragment);
+
+                        handleFragmentLoading(currentFragment, bundle);
                         return true;
                     // Load the list view
                     case R.id.nav_list:
                         currentFragment = new ListFragment();
-                        handleFragmentLoading(currentFragment);
+                        handleFragmentLoading(currentFragment, bundle);
                         return true;
                     // Load the workers view
                     case R.id.nav_workmates:
                         currentFragment = new WorkmatesFragment();
-                        handleFragmentLoading(currentFragment);
+                        handleFragmentLoading(currentFragment, bundle);
                         return true;
                 }
                 return false;
@@ -145,7 +192,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void handleFragmentLoading(Fragment currFrag) {
+    private void handleFragmentLoading(Fragment currFrag, Bundle bundle) {
+        currentFragment.setArguments(bundle);
         ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_container_view, currFrag);
         ft.commit();
@@ -168,5 +216,91 @@ public class MainActivity extends AppCompatActivity {
         // Set header text
         headerBinding.drawerName.setText(username);
         headerBinding.drawerMail.setText(email);
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getLastLocation() {
+        if (checkPermissions()) {
+            if (isLocationEnabled()) {
+                mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        Location location = task.getResult();
+                        if (location == null) {
+                            requestNewLocationData();
+                        } else {
+                            longitude = location.getLongitude();
+                            latitude = location.getLatitude();
+                            Log.i("LONGITUDE", String.valueOf(longitude));
+                            Log.i("LATITUDE", String.valueOf(latitude));
+                        }
+                    }
+                });
+            } else {
+                Toast.makeText(this, "Please turn on your location", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+        } else {
+            requestPermissions();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void requestNewLocationData() {
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(5);
+        locationRequest.setFastestInterval(0);
+        locationRequest.setNumUpdates(1);
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        mFusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+    }
+
+    private LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(@NonNull LocationResult locationResult) {
+            Location lastLocation = locationResult.getLastLocation();
+            longitude = lastLocation.getLongitude();
+            latitude = lastLocation.getLatitude();
+            Log.i("LONGITUDE LAST", String.valueOf(longitude));
+            Log.i("LATITUDE LAST", String.valueOf(latitude));
+        }
+    };
+
+    private boolean checkPermissions() {
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermissions() {
+        ActivityCompat.requestPermissions(this, new String[]{
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        }, PERMISSION_ID);
+    }
+
+    private boolean isLocationEnabled() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == PERMISSION_ID) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getLastLocation();
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (checkPermissions()) {
+            getLastLocation();
+        }
     }
 }

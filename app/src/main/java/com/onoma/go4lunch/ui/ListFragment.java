@@ -32,14 +32,17 @@ public class ListFragment extends Fragment {
         binding = FragmentListBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        double longitude = getArguments().getDouble("longitude");
+        double latitude = getArguments().getDouble("latitude");
+
         RecyclerView recyclerView = binding.fragmentListRecyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        RestaurantAdapter adapter = new RestaurantAdapter();
+        RestaurantAdapter adapter = new RestaurantAdapter(longitude, latitude);
         recyclerView.setAdapter(adapter);
 
         mRestaurantsViewModel = new ViewModelProvider(requireActivity()).get(RestaurantsViewModel.class);
-        mRestaurantsViewModel.getRestaurants().observe(getViewLifecycleOwner(), new Observer<List<Restaurant>>() {
+        mRestaurantsViewModel.getRestaurants(longitude, latitude).observe(getViewLifecycleOwner(), new Observer<List<Restaurant>>() {
             @Override
             public void onChanged(List<Restaurant> restaurants) {
                 adapter.submitList(restaurants);

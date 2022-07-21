@@ -68,29 +68,34 @@ public class MapFragment extends Fragment {
         binding = FragmentMapBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        double longitude = getArguments().getDouble("longitude");
+        double latitude = getArguments().getDouble("latitude");
+
         mRestaurantsViewModel = new ViewModelProvider(requireActivity()).get(RestaurantsViewModel.class);
         mapview = binding.mapView;
 
         final Observer<List<Restaurant>> restaurantListObserver = new Observer<List<Restaurant>>() {
             @Override
             public void onChanged(List<Restaurant> restaurants) {
-                onMapReady(restaurants);
+                if (restaurants.size() > 0) {
+                    onMapReady(restaurants, longitude, latitude);
+                }
             }
         };
-        mRestaurantsViewModel.getRestaurants().observe(getViewLifecycleOwner(), restaurantListObserver);
+        mRestaurantsViewModel.getRestaurants(longitude, latitude).observe(getViewLifecycleOwner(), restaurantListObserver);
 
         binding.mapResetLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mapview.getMapboxMap().setCamera(new CameraOptions.Builder().center(Point.fromLngLat(2.356526,48.831351)).build());
+                mapview.getMapboxMap().setCamera(new CameraOptions.Builder().center(Point.fromLngLat(longitude,latitude)).build());
             }
         });
 
         return view;
     }
 
-    private void onMapReady(List<Restaurant> restaurants) {
-        CameraOptions cameraOptions = new CameraOptions.Builder().zoom(13.5).center(Point.fromLngLat(2.356526,48.831351)).build();
+    private void onMapReady(List<Restaurant> restaurants, double longitude, double latitude) {
+        CameraOptions cameraOptions = new CameraOptions.Builder().zoom(13.5).center(Point.fromLngLat(longitude,latitude)).build();
         mapview.getMapboxMap().setCamera(cameraOptions);
         mapview.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @Override
