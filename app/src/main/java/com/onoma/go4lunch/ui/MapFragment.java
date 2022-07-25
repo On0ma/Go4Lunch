@@ -40,6 +40,8 @@ import com.mapbox.maps.plugin.annotation.AnnotationType;
 import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationManager;
 import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationManagerKt;
 import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions;
+import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener;
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotation;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManagerKt;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
@@ -77,9 +79,8 @@ public class MapFragment extends Fragment {
         final Observer<List<Restaurant>> restaurantListObserver = new Observer<List<Restaurant>>() {
             @Override
             public void onChanged(List<Restaurant> restaurants) {
-                if (restaurants.size() > 0) {
-                    onMapReady(restaurants, longitude, latitude);
-                }
+                Log.i("BEFORE", String.valueOf(restaurants));
+                onMapReady(restaurants, longitude, latitude);
             }
         };
         mRestaurantsViewModel.getRestaurants(longitude, latitude).observe(getViewLifecycleOwner(), restaurantListObserver);
@@ -109,22 +110,21 @@ public class MapFragment extends Fragment {
         Bitmap icon = drawableToBitmap(AppCompatResources.getDrawable(getContext(), R.drawable.ic_baseline_location_on_24));
         AnnotationPlugin annotationApi = AnnotationPluginImplKt.getAnnotations(mapview);
         PointAnnotationManager pointAnnotationManager = PointAnnotationManagerKt.createPointAnnotationManager(annotationApi, new AnnotationConfig());
-        // CircleAnnotationManager circleAnnotationManager = CircleAnnotationManagerKt.createCircleAnnotationManager(annotationApi, new AnnotationConfig());
+
         for (Restaurant restaurant : restaurants) {
             PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
                     .withIconImage(icon)
                     .withPoint(Point.fromLngLat(restaurant.getLongitude(), restaurant.getLatitude()));
             pointAnnotationManager.create(pointAnnotationOptions);
-            /*CircleAnnotationOptions circleAnnotationOptions = new CircleAnnotationOptions()
-                    .withPoint(Point.fromLngLat(restaurant.getLongitude(), restaurant.getLatitude()))
-                    .withCircleRadius(8.0)
-                    .withCircleColor("#ee4e8b")
-                    .withCircleBlur(0.5)
-                    .withCircleStrokeWidth(2.0)
-                    .withCircleStrokeColor("#000000");
-
-            circleAnnotationManager.create(circleAnnotationOptions);*/
         }
+
+        pointAnnotationManager.addClickListener(new OnPointAnnotationClickListener() {
+            @Override
+            public boolean onAnnotationClick(@NonNull PointAnnotation pointAnnotation) {
+                Log.i("ANNOTATION CLICK", String.valueOf(pointAnnotation.getPoint().longitude()));
+                return false;
+            }
+        });
     }
 
     public static Bitmap drawableToBitmap (Drawable drawable) {

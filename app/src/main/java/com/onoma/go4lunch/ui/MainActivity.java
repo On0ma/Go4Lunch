@@ -36,7 +36,9 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -47,6 +49,8 @@ import com.onoma.go4lunch.ViewModelFactory;
 import com.onoma.go4lunch.databinding.ActivityMainBinding;
 import com.onoma.go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.onoma.go4lunch.model.User;
+import com.onoma.go4lunch.model.UserLocation;
+import com.onoma.go4lunch.ui.viewModel.LocationViewModel;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -55,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     int PERMISSION_ID = 44;
 
     private UserViewModel mUserViewModel;
+    private LocationViewModel mLocationViewModel;
 
     Fragment currentFragment;
     FragmentTransaction ft;
@@ -97,10 +102,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         headerBinding = HeaderNavigationDrawerBinding.bind(headerView);
 
         mUserViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(UserViewModel.class);
+        // mLocationViewModel = new ViewModelProvider(this).get(LocationViewModel.class);
+
         handleDrawerNav();
         handleBottomNav(bundle);
         // Set a different tab by default on launch
-        //binding.bottomNavigation.setSelectedItemId(R.id.nav_list);
+        // binding.bottomNavigation.setSelectedItemId(R.id.nav_list);
 
         // Observe the liveData of the User
         final Observer<User> userObserver = new Observer<User>() {
@@ -122,6 +129,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             }
         };
         mUserViewModel.observeSignOut().observe(this, signOutObserver);
+
+        final Observer<UserLocation> userLocationObserver = new Observer<UserLocation>() {
+            @Override
+            public void onChanged(UserLocation userLocation) {
+
+            }
+        };
     }
 
     // Open the drawer on click on the menu button
@@ -222,13 +236,23 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private void getLastLocation() {
         if (checkPermissions()) {
             if (isLocationEnabled()) {
-                mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+                int priority = LocationRequest.PRIORITY_HIGH_ACCURACY;
+                mFusedLocationProviderClient.getCurrentLocation(priority, new CancellationToken() {
+                    @NonNull
+                    @Override
+                    public CancellationToken onCanceledRequested(@NonNull OnTokenCanceledListener onTokenCanceledListener) {
+                        return null;
+                    }
+
+                    @Override
+                    public boolean isCancellationRequested() {
+                        return false;
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Location>() {
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
                         Location location = task.getResult();
-                        if (location == null) {
-                            requestNewLocationData();
-                        } else {
+                        if (location != null) {
                             longitude = location.getLongitude();
                             latitude = location.getLatitude();
                             Log.i("LONGITUDE", String.valueOf(longitude));
@@ -245,29 +269,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             requestPermissions();
         }
     }
-
-    @SuppressLint("MissingPermission")
-    private void requestNewLocationData() {
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(5);
-        locationRequest.setFastestInterval(0);
-        locationRequest.setNumUpdates(1);
-
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        mFusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-    }
-
-    private LocationCallback locationCallback = new LocationCallback() {
-        @Override
-        public void onLocationResult(@NonNull LocationResult locationResult) {
-            Location lastLocation = locationResult.getLastLocation();
-            longitude = lastLocation.getLongitude();
-            latitude = lastLocation.getLatitude();
-            Log.i("LONGITUDE LAST", String.valueOf(longitude));
-            Log.i("LATITUDE LAST", String.valueOf(latitude));
-        }
-    };
 
     private boolean checkPermissions() {
         return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
@@ -293,14 +294,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLastLocation();
             }
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (checkPermissions()) {
-            getLastLocation();
         }
     }
 }

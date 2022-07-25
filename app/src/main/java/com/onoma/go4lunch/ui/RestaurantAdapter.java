@@ -18,7 +18,7 @@ import java.util.Objects;
 
 public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter.ViewHolder> {
 
-    private List<Restaurant> restaurantList = new ArrayList<>();
+    // private List<Restaurant> restaurantList = new ArrayList<>();
     private double locationLongitude;
     private double locationLatitude;
 

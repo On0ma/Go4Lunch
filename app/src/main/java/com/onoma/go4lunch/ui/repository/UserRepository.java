@@ -13,9 +13,6 @@ public class UserRepository {
 
     private static volatile UserRepository instance;
 
-    private Boolean signOutListener;
-
-
     private UserRepository() { }
 
     public static UserRepository getInstance() {
@@ -34,8 +31,7 @@ public class UserRepository {
     public void SignOut(Context context, UserQuery callback) {
         AuthUI.getInstance().signOut(context).addOnSuccessListener(aVoid -> {
             callback.signOutResult(true);
-        });
-        AuthUI.getInstance().signOut(context).addOnFailureListener(aVoid -> {
+        }).addOnFailureListener(aVoid -> {
             callback.signOutResult(false);
         });
     }
