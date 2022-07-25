@@ -18,16 +18,10 @@ public class UserViewModel extends ViewModel {
 
     private MutableLiveData<User> user = new MutableLiveData<>();
     private MutableLiveData<Boolean> userLoggedBoolean = new MutableLiveData<Boolean>();
-    private MutableLiveData<Boolean> signOutListener = new MutableLiveData<>();
 
     public UserViewModel() {
         mUserRepository = UserRepository.getInstance();
     }
-
-    // TODO Useless method, check if I can remove
-    /*private FirebaseUser getCurrentUser() {
-        return mUserRepository.getCurrentUser();
-    }*/
 
     private Boolean getUserLoggedIn() {
         return (mUserRepository.getCurrentUser() != null);
@@ -37,7 +31,6 @@ public class UserViewModel extends ViewModel {
         userLoggedBoolean.setValue(getUserLoggedIn());
         return userLoggedBoolean;
     }
-
 
     // Create a user from the Firebase User
     private User createUser() {
@@ -52,18 +45,7 @@ public class UserViewModel extends ViewModel {
         return user;
     }
 
-
-    // Handle Sign Out
-    public LiveData<Boolean> observeSignOut() {
-        return signOutListener;
-    }
-
-    public void getSignOut(Context context) {
-        mUserRepository.SignOut(context, new UserRepository.UserQuery() {
-            @Override
-            public void signOutResult(boolean signOutResultBool) {
-                signOutListener.setValue(signOutResultBool);
-            }
-        });
+    public Task<Void> signOut(Context context){
+        return mUserRepository.signOut(context);
     }
 }

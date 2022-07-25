@@ -128,14 +128,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 }
             }
         };
-        mUserViewModel.observeSignOut().observe(this, signOutObserver);
-
-        final Observer<UserLocation> userLocationObserver = new Observer<UserLocation>() {
-            @Override
-            public void onChanged(UserLocation userLocation) {
-
-            }
-        };
     }
 
     // Open the drawer on click on the menu button
@@ -174,8 +166,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     // Logout user and send back to the login page
     private void logout() {
-        Log.i(null, "LOGOUT");
-        mUserViewModel.getSignOut(this);
+        mUserViewModel.signOut(this).addOnSuccessListener(aVoid -> {
+            Log.i(null, "LOGOUT");
+            finish();
+        });
     }
 
     // Load a different fragment for each bottom tab

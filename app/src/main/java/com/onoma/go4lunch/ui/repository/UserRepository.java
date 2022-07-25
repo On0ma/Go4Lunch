@@ -28,12 +28,8 @@ public class UserRepository {
         }
     }
 
-    public void SignOut(Context context, UserQuery callback) {
-        AuthUI.getInstance().signOut(context).addOnSuccessListener(aVoid -> {
-            callback.signOutResult(true);
-        }).addOnFailureListener(aVoid -> {
-            callback.signOutResult(false);
-        });
+    public Task<Void> signOut(Context context){
+        return AuthUI.getInstance().signOut(context);
     }
 
     @Nullable
@@ -41,7 +37,5 @@ public class UserRepository {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
-    public interface UserQuery {
-        void signOutResult(boolean signOutResultBool);
-    }
+
 }
