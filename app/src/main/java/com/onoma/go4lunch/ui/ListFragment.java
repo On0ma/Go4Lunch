@@ -1,5 +1,6 @@
 package com.onoma.go4lunch.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +19,7 @@ import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 
 import java.util.List;
 
-public class ListFragment extends Fragment {
+public class ListFragment extends Fragment implements RestaurantAdapter.RestaurantDisplayCallback {
 
     private FragmentListBinding binding;
 
@@ -38,7 +39,7 @@ public class ListFragment extends Fragment {
         RecyclerView recyclerView = binding.fragmentListRecyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        RestaurantAdapter adapter = new RestaurantAdapter(longitude, latitude);
+        RestaurantAdapter adapter = new RestaurantAdapter(longitude, latitude, this);
         recyclerView.setAdapter(adapter);
 
         mRestaurantsViewModel = new ViewModelProvider(requireActivity()).get(RestaurantsViewModel.class);
@@ -60,5 +61,12 @@ public class ListFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onRestaurantClick(Restaurant restaurant) {
+        Intent intent = new Intent(getActivity(), RestaurantActivity.class);
+        intent.putExtra("restaurant", restaurant);
+        startActivity(intent);
     }
 }

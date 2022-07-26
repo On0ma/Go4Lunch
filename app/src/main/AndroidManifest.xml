@@ -31,7 +31,10 @@
         <activity 
             android:name=".ui.MainActivity"
             android:label="I'm hungry !">
-            
+        </activity>
+        <activity
+            android:name=".ui.RestaurantActivity"
+            android:parentActivityName=".ui.MainActivity">
         </activity>
     </application>
 

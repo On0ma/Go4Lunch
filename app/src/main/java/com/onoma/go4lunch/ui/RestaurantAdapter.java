@@ -1,6 +1,8 @@
 package com.onoma.go4lunch.ui;
 
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -21,13 +23,15 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
     // private List<Restaurant> restaurantList = new ArrayList<>();
     private double locationLongitude;
     private double locationLatitude;
+    private RestaurantDisplayCallback callback;
 
     private FragmentListItemBinding itemBinding;
 
-    public RestaurantAdapter(double locationLongitude, double locationLatitude) {
+    public RestaurantAdapter(double locationLongitude, double locationLatitude, RestaurantDisplayCallback callback) {
         super(RestaurantAdapter.DIFF_CALLBACK);
         this.locationLongitude = locationLongitude;
         this.locationLatitude = locationLatitude;
+        this.callback = callback;
     }
 
     @NonNull
@@ -39,7 +43,7 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bindTo(getItem(position));
+        holder.bindTo(getItem(position), callback);
         /*Restaurant restaurant = restaurantList.get(position);
         holder.restaurantName.setText(restaurant.getName());
         holder.restaurantAdress.setText(restaurant.getAdress());
@@ -76,10 +80,22 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
             restaurantDistance = itemBinding.fragmentListDistance;
         }
 
-        public void bindTo(Restaurant restaurant) {
+        public void bindTo(Restaurant restaurant, RestaurantDisplayCallback callback) {
             restaurantName.setText(restaurant.getName());
             restaurantAdress.setText(restaurant.getAdress());
             restaurantDistance.setText(restaurant.getDistance(locationLongitude, locationLatitude));
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    callback.onRestaurantClick(restaurant);
+                    Log.i("ITEM SELEC", String.valueOf(restaurant));
+                }
+            });
         }
+    }
+
+    public interface RestaurantDisplayCallback {
+        void onRestaurantClick(Restaurant restaurant);
     }
 }

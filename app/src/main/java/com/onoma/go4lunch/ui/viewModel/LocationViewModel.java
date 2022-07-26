@@ -2,13 +2,14 @@ package com.onoma.go4lunch.ui.viewModel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.onoma.go4lunch.model.UserLocation;
 import com.onoma.go4lunch.ui.repository.LocationRepository;
 import com.onoma.go4lunch.ui.repository.UserRepository;
 
-public class LocationViewModel {
+public class LocationViewModel extends ViewModel {
     private final LocationRepository mLocationRepository;
 
     private MutableLiveData<UserLocation> userLocation = new MutableLiveData<>();

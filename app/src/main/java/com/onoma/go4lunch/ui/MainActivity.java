@@ -9,12 +9,9 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Looper;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -24,7 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -32,25 +28,20 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseUser;
 import com.onoma.go4lunch.R;
-import com.onoma.go4lunch.ViewModelFactory;
 import com.onoma.go4lunch.databinding.ActivityMainBinding;
 import com.onoma.go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.onoma.go4lunch.model.User;
-import com.onoma.go4lunch.model.UserLocation;
 import com.onoma.go4lunch.ui.viewModel.LocationViewModel;
+import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -60,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     private UserViewModel mUserViewModel;
     private LocationViewModel mLocationViewModel;
+    private RestaurantsViewModel mRestaurantsViewModel;
 
     Fragment currentFragment;
     FragmentTransaction ft;
@@ -84,9 +76,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
+        mRestaurantsViewModel = new ViewModelProvider(this).get(RestaurantsViewModel.class);
+
         getLastLocation();
-        Log.i("LONGITUDE MAIN", String.valueOf(longitude));
-        Log.i("LATITUDE MAIN", String.valueOf(latitude));
+        Log.i("LONGITUDE BEFORE ASYNC", String.valueOf(longitude));
+        Log.i("LATITUDE BEFORE ASYNC", String.valueOf(latitude));
+
 
         // Put Location in bundle
         Bundle bundle = new Bundle();
@@ -101,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         headerView = binding.drawerNavigation.getHeaderView(0);
         headerBinding = HeaderNavigationDrawerBinding.bind(headerView);
 
-        mUserViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(UserViewModel.class);
+        mUserViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         // mLocationViewModel = new ViewModelProvider(this).get(LocationViewModel.class);
 
         handleDrawerNav();
@@ -249,8 +244,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         if (location != null) {
                             longitude = location.getLongitude();
                             latitude = location.getLatitude();
-                            Log.i("LONGITUDE", String.valueOf(longitude));
-                            Log.i("LATITUDE", String.valueOf(latitude));
+                            Log.i("LONGITUDE AFTER ASYNC", String.valueOf(longitude));
+                            Log.i("LATITUDE AFTER ASYNC", String.valueOf(latitude));
                         }
                     }
                 });

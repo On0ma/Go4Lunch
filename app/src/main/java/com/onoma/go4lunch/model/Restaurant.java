@@ -2,9 +2,10 @@ package com.onoma.go4lunch.model;
 
 import android.location.Location;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Restaurant {
+public class Restaurant implements Serializable {
 
     private int id;
     private String name;

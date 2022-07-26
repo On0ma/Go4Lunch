@@ -14,7 +14,6 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.snackbar.Snackbar;
 import com.onoma.go4lunch.R;
-import com.onoma.go4lunch.ViewModelFactory;
 import com.onoma.go4lunch.databinding.ActivityLoginBinding;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
@@ -35,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        mUserViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(UserViewModel.class);
+        mUserViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         setupListeners();
 
         // Observe if user is logged in to start main activity
