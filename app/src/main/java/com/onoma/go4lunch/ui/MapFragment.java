@@ -1,6 +1,7 @@
 package com.onoma.go4lunch.ui;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -51,6 +52,8 @@ import com.onoma.go4lunch.databinding.FragmentMapBinding;
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -110,10 +113,16 @@ public class MapFragment extends Fragment {
         Bitmap icon = drawableToBitmap(AppCompatResources.getDrawable(getContext(), R.drawable.ic_baseline_location_on_24));
         AnnotationPlugin annotationApi = AnnotationPluginImplKt.getAnnotations(mapview);
         PointAnnotationManager pointAnnotationManager = PointAnnotationManagerKt.createPointAnnotationManager(annotationApi, new AnnotationConfig());
+        List<Double> textOffset = new ArrayList<>();
+        textOffset.add(0.00);
+        textOffset.add(1.00);
 
         for (Restaurant restaurant : restaurants) {
             PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
                     .withIconImage(icon)
+                    .withTextField(restaurant.getName())
+                    .withTextSize(12.00)
+                    .withTextOffset(textOffset)
                     .withPoint(Point.fromLngLat(restaurant.getLongitude(), restaurant.getLatitude()));
             pointAnnotationManager.create(pointAnnotationOptions);
         }
@@ -121,7 +130,10 @@ public class MapFragment extends Fragment {
         pointAnnotationManager.addClickListener(new OnPointAnnotationClickListener() {
             @Override
             public boolean onAnnotationClick(@NonNull PointAnnotation pointAnnotation) {
-                Log.i("ANNOTATION CLICK", String.valueOf(pointAnnotation.getPoint().longitude()));
+                Restaurant clickedRestaurant = Restaurant.getRestaurantFromLocation(restaurants, pointAnnotation.getPoint().longitude(), pointAnnotation.getPoint().latitude());
+                Intent intent = new Intent(getActivity(), RestaurantActivity.class);
+                intent.putExtra("restaurant", clickedRestaurant);
+                startActivity(intent);
                 return false;
             }
         });

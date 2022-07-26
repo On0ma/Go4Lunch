@@ -3,6 +3,7 @@ package com.onoma.go4lunch.model;
 import android.location.Location;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 public class Restaurant implements Serializable {
@@ -75,6 +76,15 @@ public class Restaurant implements Serializable {
         float[] results = new float[3];
         Location.distanceBetween(this.getLatitude(), this.getLongitude(), posLat, posLong, results);
         return String.valueOf((int)results[0] + "m");
+    }
+
+    public static Restaurant getRestaurantFromLocation(List<Restaurant> restaurants, double longitude, double latitude ) {
+        for (Restaurant restaurant : restaurants) {
+            if (restaurant.getLatitude() == latitude && restaurant.getLongitude() == longitude) {
+                return restaurant;
+            }
+        }
+        return null;
     }
 
     @Override
