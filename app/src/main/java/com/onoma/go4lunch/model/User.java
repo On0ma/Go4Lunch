@@ -6,14 +6,24 @@ import java.util.Objects;
 
 public class User {
 
+    private String uid;
     private String name;
     private String email;
-    private Uri photoUrl;
+    private String photoUrl;
 
-    public User(String name, String email, Uri photoUrl) {
+    public User(String uid, String name, String email, String photoUrl) {
+        this.uid = uid;
         this.name = name;
         this.email = email;
         this.photoUrl = photoUrl;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getName() {
@@ -32,12 +42,22 @@ public class User {
         this.email = email;
     }
 
-    public Uri getPhotoUrl() {
+    public String getPhotoUrl() {
         return photoUrl;
     }
 
-    public void setPhotoUrl(Uri photoUrl) {
+    public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "uid='" + uid + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", photoUrl=" + photoUrl +
+                '}';
     }
 
     @Override
@@ -45,20 +65,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return name.equals(user.name) && email.equals(user.email) && photoUrl.equals(user.photoUrl);
+        return uid.equals(user.uid) && name.equals(user.name) && email.equals(user.email) && photoUrl.equals(user.photoUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, email, photoUrl);
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", photoUrl=" + photoUrl +
-                '}';
+        return Objects.hash(uid, name, email, photoUrl);
     }
 }

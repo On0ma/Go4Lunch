@@ -1,14 +1,31 @@
 package com.onoma.go4lunch.ui;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.onoma.go4lunch.databinding.ActivityRestaurantBinding;
 import com.onoma.go4lunch.model.Restaurant;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RestaurantActivity extends AppCompatActivity {
 
@@ -25,6 +42,60 @@ public class RestaurantActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         init();
+
+        Restaurant restaurant = (Restaurant) getIntent().getSerializableExtra("restaurant");
+
+        Log.i("SELECTED RESTAURANT", String.valueOf(restaurant));
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+
+        binding.restaurantLikeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        binding.restaurantActivityCheckButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                db.collection("users").document(user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                if ((document.getDouble("restaurantSelection") != null) && (document.getDouble("restaurantSelection") == restaurant.getId())) {
+                                    Map<String, Object> updates = new HashMap<>();
+                                    updates.put("restaurantSelection", FieldValue.delete());
+                                    db.collection("users").document(user.getUid()).update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Log.i("RESTAURANT DELETE", "Field successfully deleted");
+                                            binding.restaurantActivityCheckButton.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+                                        }
+                                    });
+                                } else {
+                                    Map<String, Object> data = new HashMap<>();
+                                    String restaurantName = binding.restaurantName.getText().toString();
+                                    data.put("restaurantSelection", restaurant.getId());
+                                    db.collection("users").document(user.getUid()).set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Log.i("RESTAURANT SELECTION", "Document successfully written !");
+                                            binding.restaurantActivityCheckButton.setBackgroundTintList(ColorStateList.valueOf(Color.GREEN));
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+                });
+
+            }
+        });
     }
 
     private void init() {

@@ -35,7 +35,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:contentDescription="Image de fond du restaurant"
+                    android:contentDescription="@string/restaurant_background"
                     android:src="@drawable/restaurant_background"
                     android:adjustViewBounds="false"
                     android:scaleType="centerCrop"
@@ -61,9 +61,9 @@
         app:layout_anchor="@id/appbar_container"
         app:layout_anchorGravity="bottom|end"
         app:fabSize="normal"
-        android:contentDescription="Choisir ce restaurant"
+        android:contentDescription="@string/checkmark_description"
         android:src="@drawable/ic_baseline_check_circle_24"
-        android:backgroundTint="@color/white"
+        app:backgroundTint="@color/white"
         app:behavior_autoHide="false" />
 
     <androidx.core.widget.NestedScrollView
@@ -131,7 +131,7 @@
                 android:textColor="#fc3f1b"
                 android:drawableTop="@drawable/ic_baseline_star_outline_24"
                 android:drawablePadding="4dp"
-                android:text="Like"/>
+                android:text="@string/like_button"/>
 
             <View
                 android:id="@+id/restaurant_list_separator"

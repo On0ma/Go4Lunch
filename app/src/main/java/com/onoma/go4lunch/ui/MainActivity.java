@@ -32,10 +32,15 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.onoma.go4lunch.R;
 import com.onoma.go4lunch.databinding.ActivityMainBinding;
 import com.onoma.go4lunch.databinding.HeaderNavigationDrawerBinding;
@@ -105,13 +110,52 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         // binding.bottomNavigation.setSelectedItemId(R.id.nav_list);
 
         // Observe the liveData of the User
-        final Observer<User> userObserver = new Observer<User>() {
+//        final Observer<User> userObserver = new Observer<User>() {
+//            @Override
+//            public void onChanged(User user) {
+//                setUserData(user);
+//            }
+//        };
+//        mUserViewModel.getUser().observe(this, userObserver);
+
+        // mUserViewModel.getUserData().addOnSuccessListener(user -> setUserData(user));
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Log.i("USER UID", userUid);
+
+        db.collection("users").document(userUid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onChanged(User user) {
-                setUserData(user);
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.i("TASK SUCCESSFUL", "DocumentSnapshot data: " + document.getData());
+                        User userData = new User(
+                                document.getString("uid"),
+                                document.getString("name"),
+                                document.getString("email"),
+                                document.getString("photoUrl")
+                        );
+                        setUserData(userData);
+                    } else {
+                        Log.i("TASK", "No such document");
+                    }
+                } else {
+                    Log.i("TASK FAILED", "get failed with ", task.getException());
+                }
             }
-        };
-        mUserViewModel.getUser().observe(this, userObserver);
+        });
+
+//        final Observer<User> userDataObserver = new Observer<User>() {
+//            @Override
+//            public void onChanged(User user) {
+//                Log.i("USER LOGIN DATA", String.valueOf(user));
+//                setUserData(user);
+//            }
+//        };
+//
+//        mUserViewModel.getUserData().observe(this, userDataObserver);
 
         // Observe the LiveData of the SignOut
         final Observer<Boolean> signOutObserver = new Observer<Boolean>() {
@@ -203,22 +247,29 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void setUserData (User user){
-        // Get & Set the user picture
-        Uri profilePictureUrl = user.getPhotoUrl();
-        if (profilePictureUrl != null) {
-            Glide.with(this)
-                    .load(profilePictureUrl)
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(headerBinding.drawerProfile);
+        if (user != null) {
+            // Get & Set the user picture
+            String profilePictureUrl = user.getPhotoUrl();
+            if (profilePictureUrl != null) {
+                Glide.with(this)
+                        .load(profilePictureUrl)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(headerBinding.drawerProfile);
+            }
+
+            Log.i("VALEUR DU USER", String.valueOf(user));
+
+            //Get email & username from User
+            String email = TextUtils.isEmpty(user.getEmail()) ? getString(R.string.info_no_email_found) : user.getEmail();
+            String username = TextUtils.isEmpty(user.getName()) ? getString(R.string.info_no_username_found) : user.getName();
+
+            // Set header text
+            headerBinding.drawerName.setText(username);
+            headerBinding.drawerMail.setText(email);
         }
-
-        //Get email & username from User
-        String email = TextUtils.isEmpty(user.getEmail()) ? getString(R.string.info_no_email_found) : user.getEmail();
-        String username = TextUtils.isEmpty(user.getName()) ? getString(R.string.info_no_username_found) : user.getName();
-
-        // Set header text
-        headerBinding.drawerName.setText(username);
-        headerBinding.drawerMail.setText(email);
+        else {
+            Log.i("SET USER DATA ERROR", "user is null");
+        }
     }
 
     @SuppressLint("MissingPermission")

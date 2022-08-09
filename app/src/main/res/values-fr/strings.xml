@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Go4Lunch</string>
+    <string name="connection_succeed">Connexion réussie</string>
+    <string name="error_authentication_canceled">Connexion annulée</string>
+    <string name="bottom_nav_map">Carte</string>
+    <string name="bottom_nav_list">Liste</string>
+    <string name="bottom_nav_workmates">Collègues</string>
+    <string name="lunch">Votre repas</string>
+    <string name="settings">Paramètres</string>
+    <string name="logout">Déconnexion</string>
+    <string name="user_location_permission_explanation">Cette application a besoin de votre localisation pour fonctionner</string>
+    <string name="app_tagline">Trouvez un bon restaurant et invitez vos collègues !</string>
+    <string name="google_signin">Connexion avec Google</string>
+    <string name="restaurant_background">Image du restaurant</string>
+    <string name="checkmark_description">Choississez ce restaurant</string>
+    <string name="like_button">Favori</string>
+    <string name="center_button">Centrer la carte sur moi</string>
+    <string name="info_no_username_found">Nom d\'utilisateur inconnu</string>
+    <string name="info_no_email_found">Email inconnu</string>
+    <string name="error_unknown_error">Erreur inconnue</string>
+    <string name="error_no_internet">Pas de connexion internet</string>
+</resources>

@@ -97,6 +97,7 @@ public class LoginActivity extends AppCompatActivity {
             // SUCCESS
             if (resultCode == RESULT_OK) {
                 showSnackBar(getString(R.string.connection_succeed));
+                mUserViewModel.createUser();
                 startMapActivity();
             } else {
                 // ERRORS
