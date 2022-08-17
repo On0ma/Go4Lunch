@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -25,10 +27,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.onoma.go4lunch.databinding.ActivityRestaurantBinding;
 import com.onoma.go4lunch.model.Restaurant;
+import com.onoma.go4lunch.model.User;
 import com.onoma.go4lunch.ui.repository.UserRepository;
+import com.onoma.go4lunch.ui.utils.StateData;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RestaurantActivity extends AppCompatActivity {
@@ -57,8 +62,29 @@ public class RestaurantActivity extends AppCompatActivity {
 
         Log.i("SELECTED RESTAURANT", String.valueOf(restaurant));
 
+        RecyclerView recyclerView = binding.restaurantRecyclerView;
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        RestaurantWorkersAdapter adapter = new RestaurantWorkersAdapter();
+        recyclerView.setAdapter(adapter);
+
 //        FirebaseFirestore db = FirebaseFirestore.getInstance();
 //        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        final Observer<StateData<List<User>>> usersFromRestaurantObserver = new Observer<StateData<List<User>>>() {
+            @Override
+            public void onChanged(StateData<List<User>> listStateData) {
+                switch (listStateData.getStatus()) {
+                    case SUCCESS:
+                        adapter.submitList(listStateData.getData());
+                        break;
+                    case ERROR:
+                        Log.i(null, listStateData.getError());
+                }
+            }
+        };
+
+        mUserViewModel.getUsersFromRestaurant(restaurant).observe(this, usersFromRestaurantObserver);
 
 
         binding.restaurantLikeButton.setOnClickListener(new View.OnClickListener() {

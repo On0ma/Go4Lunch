@@ -31,6 +31,7 @@ public class UserViewModel extends ViewModel {
     private MutableLiveData<Boolean> userLoggedBoolean = new MutableLiveData<Boolean>();
     private StateLiveData<User> userLiveData = new StateLiveData<>();
     private StateLiveData<List<User>> usersListLiveData = new StateLiveData<List<User>>();
+    private StateLiveData<List<User>> usersFromRestaurantListLiveData = new StateLiveData<>();
     private MutableLiveData<UserRepository.RestaurantSelectionResult> restaurantSelectionLiveData = new MutableLiveData<>();
 
     public UserViewModel() {
@@ -124,6 +125,37 @@ public class UserViewModel extends ViewModel {
             @Override
             public void getAllUsersFailure(String error) {
                 usersListLiveData.postError(error);
+            }
+        });
+    }
+
+    public LiveData<StateData<List<User>>> getUsersFromRestaurant(Restaurant restaurant) {
+        loadUsersFromRestaurant(restaurant);
+        return usersFromRestaurantListLiveData;
+    }
+
+    private void loadUsersFromRestaurant(Restaurant restaurant) {
+        mUserRepository.getAllUsers(new UserRepository.AllUsersQuery() {
+            @Override
+            public void getAllUsersSuccess(QuerySnapshot results) {
+                List<User> userList = new ArrayList<>();
+                for (QueryDocumentSnapshot document : results) {
+                    if ((document.getString("restaurantSelection") != null) && (document.getString("restaurantSelection").equals(restaurant.getId()))) {
+                        User newUser = new User(
+                                document.getString("uid"),
+                                document.getString("name"),
+                                document.getString("email"),
+                                document.getString("photoUrl")
+                        );
+                        userList.add(newUser);
+                    }
+                }
+                usersFromRestaurantListLiveData.postSuccess(userList);
+            }
+
+            @Override
+            public void getAllUsersFailure(String error) {
+                usersFromRestaurantListLiveData.postError(error);
             }
         });
     }
