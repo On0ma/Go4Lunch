@@ -57,7 +57,7 @@ public class RestaurantsViewModel extends ViewModel {
             public void restaurantApiResult(List<Feature> restaurants) {
                 for (Feature restaurant : restaurants) {
                     Restaurant item = new Restaurant(
-                            restaurants.indexOf(restaurant),
+                            restaurant.getId(),
                             restaurant.getTextFr(),
                             restaurant.getProperties().getAddress(),
                             restaurant.getProperties().getCategory(),

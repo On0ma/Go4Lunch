@@ -8,14 +8,14 @@ import java.util.Objects;
 
 public class Restaurant implements Serializable {
 
-    private int id;
+    private String id;
     private String name;
     private String adress;
     private String type;
     private double longitude;
     private double latitude;
 
-    public Restaurant(int id, String name, String adress, String type, double longitude, double latitude) {
+    public Restaurant(String id, String name, String adress, String type, double longitude, double latitude) {
         this.id = id;
         this.name = name;
         this.adress = adress;
@@ -24,11 +24,11 @@ public class Restaurant implements Serializable {
         this.latitude = latitude;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -92,7 +92,7 @@ public class Restaurant implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Restaurant that = (Restaurant) o;
-        return id == that.id && Double.compare(that.longitude, longitude) == 0 && Double.compare(that.latitude, latitude) == 0 && name.equals(that.name) && adress.equals(that.adress) && type.equals(that.type);
+        return Double.compare(that.longitude, longitude) == 0 && Double.compare(that.latitude, latitude) == 0 && id.equals(that.id) && name.equals(that.name) && adress.equals(that.adress) && Objects.equals(type, that.type);
     }
 
     @Override

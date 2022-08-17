@@ -16,10 +16,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
+import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.model.User;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserRepository {
 
@@ -90,17 +96,62 @@ public class UserRepository {
         }
     }
 
-    public void getAllUsers() {
+    public void getAllUsers(AllUsersQuery callback) {
         getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Log.d(null, document.getId() + " => " + document.getData());
-                    }
+                    callback.getAllUsersSuccess(task.getResult());
+
                 } else {
-                    Log.d(null,"Error getting documents: ", task.getException());
+                    callback.getAllUsersFailure("Error getting documents: " + task.getException());
                 }
+            }
+        });
+    }
+
+    public void updateRestaurantSelection(Restaurant restaurant, Boolean update, RestaurantSelectionQuery callback) {
+        getUsersCollection().document(getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        if ((document.getString("restaurantSelection") != null) && (document.getString("restaurantSelection").equals(restaurant.getId()))) {
+                            if (update) {
+                                deleteRestaurantSelection(restaurant, callback);
+                            } else {
+                                callback.getRestaurantSelection(RestaurantSelectionResult.CHECKED);
+                            }
+                        } else {
+                            if (update) {
+                                addRestaurantSelection(restaurant, callback);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private void addRestaurantSelection(Restaurant restaurant, RestaurantSelectionQuery callback) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("restaurantSelection", restaurant.getId());
+        getUsersCollection().document(getCurrentUser().getUid()).set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                callback.getRestaurantSelection(RestaurantSelectionResult.ADD);
+            }
+        });
+    }
+
+    private void deleteRestaurantSelection(Restaurant restaurant, RestaurantSelectionQuery callback) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("restaurantSelection", FieldValue.delete());
+        getUsersCollection().document(getCurrentUser().getUid()).update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                callback.getRestaurantSelection(RestaurantSelectionResult.DELETE);
             }
         });
     }
@@ -119,4 +170,18 @@ public class UserRepository {
         void getUserFailure(String error);
     }
 
+    public interface AllUsersQuery {
+        void getAllUsersSuccess(QuerySnapshot results);
+        void getAllUsersFailure(String error);
+    }
+
+    public interface RestaurantSelectionQuery {
+        void getRestaurantSelection(RestaurantSelectionResult result);
+    }
+
+    public enum RestaurantSelectionResult {
+        ADD,
+        DELETE,
+        CHECKED
+    }
 }
