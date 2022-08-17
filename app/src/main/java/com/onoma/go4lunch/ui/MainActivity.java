@@ -45,6 +45,8 @@ import com.onoma.go4lunch.R;
 import com.onoma.go4lunch.databinding.ActivityMainBinding;
 import com.onoma.go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.onoma.go4lunch.model.User;
+import com.onoma.go4lunch.ui.utils.StateData;
+import com.onoma.go4lunch.ui.utils.StateLiveData;
 import com.onoma.go4lunch.ui.viewModel.LocationViewModel;
 import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
@@ -120,32 +122,32 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         // mUserViewModel.getUserData().addOnSuccessListener(user -> setUserData(user));
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Log.i("USER UID", userUid);
-
-        db.collection("users").document(userUid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.i("TASK SUCCESSFUL", "DocumentSnapshot data: " + document.getData());
-                        User userData = new User(
-                                document.getString("uid"),
-                                document.getString("name"),
-                                document.getString("email"),
-                                document.getString("photoUrl")
-                        );
-                        setUserData(userData);
-                    } else {
-                        Log.i("TASK", "No such document");
-                    }
-                } else {
-                    Log.i("TASK FAILED", "get failed with ", task.getException());
-                }
-            }
-        });
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//        Log.i("USER UID", userUid);
+//
+//        db.collection("users").document(userUid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    DocumentSnapshot document = task.getResult();
+//                    if (document.exists()) {
+//                        Log.i("TASK SUCCESSFUL", "DocumentSnapshot data: " + document.getData());
+//                        User userData = new User(
+//                                document.getString("uid"),
+//                                document.getString("name"),
+//                                document.getString("email"),
+//                                document.getString("photoUrl")
+//                        );
+//                        setUserData(userData);
+//                    } else {
+//                        Log.i("TASK", "No such document");
+//                    }
+//                } else {
+//                    Log.i("TASK FAILED", "get failed with ", task.getException());
+//                }
+//            }
+//        });
 
 //        final Observer<User> userDataObserver = new Observer<User>() {
 //            @Override
@@ -157,16 +159,34 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 //
 //        mUserViewModel.getUserData().observe(this, userDataObserver);
 
-        // Observe the LiveData of the SignOut
-        final Observer<Boolean> signOutObserver = new Observer<Boolean>() {
+        final Observer<StateData<User>> userObserver = new Observer<StateData<User>>() {
             @Override
-            public void onChanged(Boolean aBoolean) {
-                // if the logout succeed the activity is ended
-                if (aBoolean) {
-                    finish();
+            public void onChanged(StateData<User> user) {
+                switch (user.getStatus()) {
+                    case ERROR:
+                        String error = user.getError();
+                        Log.e(null, error);
+                        break;
+                    case SUCCESS:
+                        User userData = user.getData();
+                        setUserData(userData);
+                        break;
                 }
             }
         };
+
+        mUserViewModel.getUserData().observe(this, userObserver);
+
+        // Observe the LiveData of the SignOut
+//        final Observer<Boolean> signOutObserver = new Observer<Boolean>() {
+//            @Override
+//            public void onChanged(Boolean aBoolean) {
+//                // if the logout succeed the activity is ended
+//                if (aBoolean) {
+//                    finish();
+//                }
+//            }
+//        };
     }
 
     // Open the drawer on click on the menu button

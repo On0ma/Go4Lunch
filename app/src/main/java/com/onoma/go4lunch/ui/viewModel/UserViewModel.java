@@ -14,6 +14,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.onoma.go4lunch.model.User;
 import com.onoma.go4lunch.ui.repository.UserRepository;
+import com.onoma.go4lunch.ui.utils.StateData;
+import com.onoma.go4lunch.ui.utils.StateLiveData;
 
 public class UserViewModel extends ViewModel {
     private final UserRepository mUserRepository;
@@ -21,6 +23,7 @@ public class UserViewModel extends ViewModel {
     private MutableLiveData<User> user = new MutableLiveData<>();
     private MutableLiveData<String> userError = new MutableLiveData<>();
     private MutableLiveData<Boolean> userLoggedBoolean = new MutableLiveData<Boolean>();
+    private StateLiveData<User> userLiveData = new StateLiveData<>();
 
     public UserViewModel() {
         mUserRepository = UserRepository.getInstance();
@@ -53,24 +56,37 @@ public class UserViewModel extends ViewModel {
         mUserRepository.createUser();
     }
 
-    public LiveData<User> getUserData() {
-        if (user == null) {
-            loadUserData();
-        }
-        return user;
+//    public LiveData<User> getUserData() {
+//        if (user == null) {
+//            loadUserData();
+//        }
+//        return user;
+//    }
+
+    public LiveData<StateData<User>> getUserData() {
+        loadUserData();
+        return userLiveData;
     }
 
     private void loadUserData() {
         mUserRepository.getUserData(new UserRepository.UserQuery() {
             @Override
             public void getUserSuccess(DocumentSnapshot userDocument) {
-                user.setValue(userDocument.toObject(User.class));
+                //user.setValue(userDocument.toObject(User.class));
+                User userData = new User(
+                        userDocument.getString("uid"),
+                        userDocument.getString("name"),
+                        userDocument.getString("email"),
+                        userDocument.getString("photoUrl")
+                );
+                userLiveData.postSuccess(userData);
             }
 
             @Override
             public void getUserFailure(String error) {
-                userError.setValue(error);
-                Log.i("USER FAILURE", error);
+                // userError.setValue(error);
+                // Log.i("USER FAILURE", error);
+                userLiveData.postError(error);
             }
         });
     }
