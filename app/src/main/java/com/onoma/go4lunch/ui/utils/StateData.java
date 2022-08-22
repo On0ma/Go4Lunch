@@ -7,7 +7,7 @@ public class StateData<T> {
 
     // TODO remove created status
     public StateData() {
-        this.status = DataStatus.CREATED;
+        this.status = null;
         this.data = null;
         this.error = null;
     }
@@ -39,7 +39,6 @@ public class StateData<T> {
     }
 
     public enum DataStatus {
-        CREATED,
         SUCCESS,
         ERROR
     }
