@@ -23,7 +23,7 @@ public class UserViewModel extends ViewModel {
     private final UserRepository mUserRepository;
 
     private MutableLiveData<Boolean> userLoggedBoolean = new MutableLiveData<Boolean>();
-    private StateLiveData<User> userLiveData = new StateLiveData<>();
+    private StateLiveData<User> userLiveData;
     private StateLiveData<List<User>> usersListLiveData = new StateLiveData<List<User>>();
     private StateLiveData<List<User>> usersFromRestaurantListLiveData = new StateLiveData<>();
     private MutableLiveData<UserRepository.RestaurantSelectionResult> restaurantSelectionLiveData = new MutableLiveData<>();
@@ -46,7 +46,10 @@ public class UserViewModel extends ViewModel {
     }
 
     public LiveData<StateData<User>> getUserData() {
-        loadUserData();
+        if (userLiveData == null) {
+            userLiveData = new StateLiveData<>();
+            loadUserData();
+        }
         return userLiveData;
     }
 
