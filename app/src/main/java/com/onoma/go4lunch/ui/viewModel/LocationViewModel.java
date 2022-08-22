@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.onoma.go4lunch.model.UserLocation;
 import com.onoma.go4lunch.ui.repository.LocationRepository;
-import com.onoma.go4lunch.ui.repository.UserRepository;
 
 public class LocationViewModel extends ViewModel {
     private final LocationRepository mLocationRepository;

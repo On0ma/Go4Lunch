@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -32,23 +31,15 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.onoma.go4lunch.R;
 import com.onoma.go4lunch.databinding.ActivityMainBinding;
 import com.onoma.go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.onoma.go4lunch.model.User;
 import com.onoma.go4lunch.ui.utils.StateData;
-import com.onoma.go4lunch.ui.utils.StateLiveData;
-import com.onoma.go4lunch.ui.viewModel.LocationViewModel;
-import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -57,8 +48,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     int PERMISSION_ID = 44;
 
     private UserViewModel mUserViewModel;
-    private LocationViewModel mLocationViewModel;
-    private RestaurantsViewModel mRestaurantsViewModel;
 
     Fragment currentFragment;
     FragmentTransaction ft;
@@ -83,12 +72,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-        mRestaurantsViewModel = new ViewModelProvider(this).get(RestaurantsViewModel.class);
-
         getLastLocation();
         Log.i("LONGITUDE BEFORE ASYNC", String.valueOf(longitude));
         Log.i("LATITUDE BEFORE ASYNC", String.valueOf(latitude));
-
 
         // Put Location in bundle
         Bundle bundle = new Bundle();
@@ -104,60 +90,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         headerBinding = HeaderNavigationDrawerBinding.bind(headerView);
 
         mUserViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        // mLocationViewModel = new ViewModelProvider(this).get(LocationViewModel.class);
 
         handleDrawerNav();
         handleBottomNav(bundle);
         // Set a different tab by default on launch
         // binding.bottomNavigation.setSelectedItemId(R.id.nav_list);
-
-        // Observe the liveData of the User
-//        final Observer<User> userObserver = new Observer<User>() {
-//            @Override
-//            public void onChanged(User user) {
-//                setUserData(user);
-//            }
-//        };
-//        mUserViewModel.getUser().observe(this, userObserver);
-
-        // mUserViewModel.getUserData().addOnSuccessListener(user -> setUserData(user));
-
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-//        Log.i("USER UID", userUid);
-//
-//        db.collection("users").document(userUid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    DocumentSnapshot document = task.getResult();
-//                    if (document.exists()) {
-//                        Log.i("TASK SUCCESSFUL", "DocumentSnapshot data: " + document.getData());
-//                        User userData = new User(
-//                                document.getString("uid"),
-//                                document.getString("name"),
-//                                document.getString("email"),
-//                                document.getString("photoUrl")
-//                        );
-//                        setUserData(userData);
-//                    } else {
-//                        Log.i("TASK", "No such document");
-//                    }
-//                } else {
-//                    Log.i("TASK FAILED", "get failed with ", task.getException());
-//                }
-//            }
-//        });
-
-//        final Observer<User> userDataObserver = new Observer<User>() {
-//            @Override
-//            public void onChanged(User user) {
-//                Log.i("USER LOGIN DATA", String.valueOf(user));
-//                setUserData(user);
-//            }
-//        };
-//
-//        mUserViewModel.getUserData().observe(this, userDataObserver);
 
         final Observer<StateData<User>> userObserver = new Observer<StateData<User>>() {
             @Override
@@ -174,19 +111,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 }
             }
         };
-
         mUserViewModel.getUserData().observe(this, userObserver);
-
-        // Observe the LiveData of the SignOut
-//        final Observer<Boolean> signOutObserver = new Observer<Boolean>() {
-//            @Override
-//            public void onChanged(Boolean aBoolean) {
-//                // if the logout succeed the activity is ended
-//                if (aBoolean) {
-//                    finish();
-//                }
-//            }
-//        };
     }
 
     // Open the drawer on click on the menu button
@@ -276,9 +201,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         .apply(RequestOptions.circleCropTransform())
                         .into(headerBinding.drawerProfile);
             }
-
-            Log.i("VALEUR DU USER", String.valueOf(user));
-
             //Get email & username from User
             String email = TextUtils.isEmpty(user.getEmail()) ? getString(R.string.info_no_email_found) : user.getEmail();
             String username = TextUtils.isEmpty(user.getName()) ? getString(R.string.info_no_username_found) : user.getName();

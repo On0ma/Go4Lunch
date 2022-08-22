@@ -1,6 +1,5 @@
 package com.onoma.go4lunch.ui;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.onoma.go4lunch.databinding.FragmentListItemBinding;
 import com.onoma.go4lunch.model.Restaurant;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter.ViewHolder> {
 
-    // private List<Restaurant> restaurantList = new ArrayList<>();
     private double locationLongitude;
     private double locationLatitude;
     private RestaurantDisplayCallback callback;
@@ -44,10 +38,6 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.bindTo(getItem(position), callback);
-        /*Restaurant restaurant = restaurantList.get(position);
-        holder.restaurantName.setText(restaurant.getName());
-        holder.restaurantAdress.setText(restaurant.getAdress());
-        holder.restaurantDistance.setText(String.valueOf(restaurant.getLongitude()));*/
     }
 
     public static final DiffUtil.ItemCallback<Restaurant> DIFF_CALLBACK = new DiffUtil.ItemCallback<Restaurant>() {
@@ -61,12 +51,6 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
             return oldItem.equals(newItem);
         }
     };
-
-    /*public void setRestaurantList(List<Restaurant> restaurantList) {
-        this.restaurantList = restaurantList;
-        // TODO Mettre à jour avec des méthodes plus spécifiques
-        notifyDataSetChanged();
-    }*/
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView restaurantName;
@@ -89,7 +73,6 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
                 @Override
                 public void onClick(View view) {
                     callback.onRestaurantClick(restaurant);
-                    Log.i("ITEM SELEC", String.valueOf(restaurant));
                 }
             });
         }

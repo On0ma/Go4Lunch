@@ -5,7 +5,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -22,6 +22,7 @@
             android:name=".ui.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+            <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,8 +1,6 @@
 package com.onoma.go4lunch.ui.repository;
 
 import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,7 +16,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.onoma.go4lunch.model.Restaurant;
@@ -54,7 +51,6 @@ public class UserRepository {
 
     public void createUser() {
         FirebaseUser user = getCurrentUser();
-        Log.i("CREATE USER", String.valueOf(user));
         if (user != null) {
             String urlPicture = (user.getPhotoUrl() != null) ? user.getPhotoUrl().toString() : null;
             String username = user.getDisplayName();
@@ -62,8 +58,6 @@ public class UserRepository {
             String uid = user.getUid();
 
             User userToCreate = new User(uid, username, email, urlPicture);
-
-            // Task<DocumentSnapshot> userData = getUserData();
 
             getUsersCollection().document(uid).get().addOnSuccessListener(documentSnapshot -> {
                 this.getUsersCollection().document(uid).set(userToCreate);
@@ -73,26 +67,21 @@ public class UserRepository {
 
     public void getUserData(UserQuery callback) {
         String uid = getCurrentUser().getUid();
-        Log.i("USER UID", uid);
         if (uid != null) {
-            // return this.getUsersCollection().document(uid).get();
             this.getUsersCollection().document(uid).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            Log.i("SUCCESS USER CALLBACK", "user data");
                             callback.getUserSuccess(documentSnapshot);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Log.i("ERROR USER CALLBACK", "error getting user", e);
                             callback.getUserFailure("error getting user data");
                         }
                     });
         } else {
             callback.getUserFailure("error getting user data");
-            // return null;
         }
     }
 
@@ -109,6 +98,8 @@ public class UserRepository {
             }
         });
     }
+
+    // TODO remove boolean and update methods
 
     public void updateRestaurantSelection(Restaurant restaurant, Boolean update, RestaurantSelectionQuery callback) {
         getUsersCollection().document(getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

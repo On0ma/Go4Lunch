@@ -2,7 +2,6 @@ package com.onoma.go4lunch.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,12 +46,8 @@ public class ListFragment extends Fragment implements RestaurantAdapter.Restaura
             @Override
             public void onChanged(List<Restaurant> restaurants) {
                 adapter.submitList(restaurants);
-                Log.i(null, String.valueOf(restaurants));
-                Log.i("Restaurants Observer", "CHANGED");
-                Log.i(null, String.valueOf(adapter.getItemCount()));
             }
         });
-        // List<RestaurantResponse> restaurantResponseList = mRestaurantsViewModel.getRestaurants();
 
         return view;
     }

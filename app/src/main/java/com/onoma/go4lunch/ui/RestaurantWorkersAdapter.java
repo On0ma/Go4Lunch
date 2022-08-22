@@ -1,7 +1,6 @@
 package com.onoma.go4lunch.ui;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.onoma.go4lunch.databinding.ActivityRestaurantItemBinding;
-import com.onoma.go4lunch.databinding.FragmentWorkmatesItemBinding;
 import com.onoma.go4lunch.model.User;
 
 public class RestaurantWorkersAdapter extends ListAdapter<User, RestaurantWorkersAdapter.ViewHolder> {
@@ -59,6 +57,7 @@ public class RestaurantWorkersAdapter extends ListAdapter<User, RestaurantWorker
             workerName = itemBinding.restaurantWorkerItemName;
         }
 
+        // TODO add string ressource
         public void bindTo(User user) {
             workerName.setText(user.getName() + " is joining !");
             Glide.with(workerPicture.getContext())

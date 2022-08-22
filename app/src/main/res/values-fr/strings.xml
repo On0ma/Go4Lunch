@@ -20,4 +20,5 @@
     <string name="info_no_email_found">Email inconnu</string>
     <string name="error_unknown_error">Erreur inconnue</string>
     <string name="error_no_internet">Pas de connexion internet</string>
+    <string name="facebook_signin">Connexion avec Facebook</string>
 </resources>

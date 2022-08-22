@@ -1,8 +1,6 @@
 package com.onoma.go4lunch.ui;
 
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,9 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.onoma.go4lunch.databinding.FragmentListItemBinding;
 import com.onoma.go4lunch.databinding.FragmentWorkmatesItemBinding;
-import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.model.User;
 
 

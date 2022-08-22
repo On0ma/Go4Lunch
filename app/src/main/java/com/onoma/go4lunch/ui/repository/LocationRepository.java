@@ -1,11 +1,7 @@
 package com.onoma.go4lunch.ui.repository;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.location.Location;
-import android.provider.Settings;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 

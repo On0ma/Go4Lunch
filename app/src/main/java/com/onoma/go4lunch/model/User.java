@@ -1,7 +1,5 @@
 package com.onoma.go4lunch.model;
 
-import android.net.Uri;
-
 import java.util.Objects;
 
 public class User {

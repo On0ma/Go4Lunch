@@ -1,13 +1,9 @@
 package com.onoma.go4lunch.data;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mapbox.api.tilequery.MapboxTilequery;
-import com.onoma.go4lunch.R;
-
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;

@@ -146,7 +146,6 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/restaurant_recycler_view"
                 android:layout_width="0dp"
-                android:layout_margin="16dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/restaurant_list_separator"
                 app:layout_constraintStart_toStartOf="parent"
