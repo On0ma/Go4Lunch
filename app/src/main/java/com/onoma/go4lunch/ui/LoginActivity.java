@@ -78,8 +78,8 @@ public class LoginActivity extends AppCompatActivity {
         // Choose authentication providers
         List<AuthUI.IdpConfig> providers =
                 Arrays.asList(
-                        new AuthUI.IdpConfig.GoogleBuilder().build()
-                        //new AuthUI.IdpConfig.FacebookBuilder().build()
+                        new AuthUI.IdpConfig.GoogleBuilder().build(),
+                        new AuthUI.IdpConfig.FacebookBuilder().build()
                 );
 
         final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(

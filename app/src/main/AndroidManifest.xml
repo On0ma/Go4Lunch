@@ -23,6 +23,7 @@
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
             <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>
+            <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_application_id"/>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,8 +33,17 @@
         <activity 
             android:name=".ui.MainActivity"
             android:label="I'm hungry !">
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
-        <activity
+        <activity android:name=".ui.SearchResultsActivity"
+            android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.SEARCH" />
+        </intent-filter>
+    </activity>
+
+    <activity
             android:name=".ui.RestaurantActivity"
             android:parentActivityName=".ui.MainActivity">
         </activity>

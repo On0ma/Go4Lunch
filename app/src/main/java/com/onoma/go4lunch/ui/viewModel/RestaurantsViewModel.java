@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.onoma.go4lunch.model.Feature;
 import com.onoma.go4lunch.model.Restaurant;
+import com.onoma.go4lunch.model.User;
 import com.onoma.go4lunch.ui.repository.RestaurantRepository;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class RestaurantsViewModel extends ViewModel {
     private final RestaurantRepository mRestaurantRepository;
 
     private MutableLiveData<List<Restaurant>> restaurantsLiveData;
+    private MutableLiveData<RestaurantRepository.RestaurantFavoriteResult> restaurantFavoriteLiveData = new MutableLiveData<>();
 
     public RestaurantsViewModel() {
         mRestaurantRepository = RestaurantRepository.getInstance();
@@ -42,7 +44,9 @@ public class RestaurantsViewModel extends ViewModel {
                             restaurant.getProperties().getAddress(),
                             restaurant.getProperties().getCategory(),
                             restaurant.getCenter().get(0),
-                            restaurant.getCenter().get(1)
+                            restaurant.getCenter().get(1),
+                            0,
+                            0
                     );
                     result.add(item);
                 }
@@ -52,6 +56,23 @@ public class RestaurantsViewModel extends ViewModel {
             @Override
             public void restaurantApiFailure(String error, Throwable t) {
                 Log.i("TAG", error, t);
+            }
+        });
+    }
+
+    public void initRestaurantFavorite(Restaurant restaurant, Boolean update) {
+        loadRestaurantFavorite(restaurant, update);
+    }
+
+    public LiveData<RestaurantRepository.RestaurantFavoriteResult> getRestaurantFavorite() {
+        return restaurantFavoriteLiveData;
+    }
+
+    private void loadRestaurantFavorite(Restaurant restaurant, Boolean update) {
+        mRestaurantRepository.updateRestaurantFavorite(restaurant, update, new RestaurantRepository.RestaurantFavoriteQuery() {
+            @Override
+            public void getRestaurantFavorite(RestaurantRepository.RestaurantFavoriteResult result) {
+                restaurantFavoriteLiveData.setValue(result);
             }
         });
     }

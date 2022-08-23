@@ -55,7 +55,7 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-geojson:6.4.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-turf:6.4.0'
 
-    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
+    implementation 'com.facebook.android:facebook-android-sdk:12.3.0'
 
     implementation("com.google.android.gms:play-services-location:18.0.0")
 }

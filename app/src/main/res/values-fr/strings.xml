@@ -21,4 +21,6 @@
     <string name="error_unknown_error">Erreur inconnue</string>
     <string name="error_no_internet">Pas de connexion internet</string>
     <string name="facebook_signin">Connexion avec Facebook</string>
+    <string name="search_hint">Chercher les restaurants</string>
+    <string name="toolbar_subtitle">J\'ai faim !</string>
 </resources>

@@ -1,8 +1,10 @@
 package com.onoma.go4lunch.ui;
 
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.onoma.go4lunch.databinding.FragmentListItemBinding;
 import com.onoma.go4lunch.model.Restaurant;
+
+import org.w3c.dom.Text;
 
 public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter.ViewHolder> {
 
@@ -50,24 +54,41 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
         public boolean areContentsTheSame(@NonNull Restaurant oldItem, @NonNull Restaurant newItem) {
             return oldItem.equals(newItem);
         }
+
+        @Override
+        public Restaurant getChangePayload(@NonNull Restaurant oldItem, @NonNull Restaurant newItem) {
+            Bundle diffBundle = new Bundle();
+            return null;
+        }
     };
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView restaurantName;
         private TextView restaurantAdress;
         private TextView restaurantDistance;
+        private TextView restaurantWorkersNb;
+        private ImageView restaurantStar1;
+        private ImageView restaurantStar2;
+        private ImageView restaurantStar3;
 
         public ViewHolder(FragmentListItemBinding itemBinding) {
             super(itemBinding.getRoot());
             restaurantName = itemBinding.fragmentListItemTitle;
             restaurantAdress = itemBinding.fragmentListItemAdress;
             restaurantDistance = itemBinding.fragmentListDistance;
+            restaurantWorkersNb = itemBinding.fragmentListWorkers;
+            restaurantStar1 = itemBinding.fragmentListRating1;
+            restaurantStar2 = itemBinding.fragmentListRating2;
+            restaurantStar3 = itemBinding.fragmentListRating3;
         }
 
         public void bindTo(Restaurant restaurant, RestaurantDisplayCallback callback) {
             restaurantName.setText(restaurant.getName());
             restaurantAdress.setText(restaurant.getAdress());
             restaurantDistance.setText(restaurant.getDistance(locationLongitude, locationLatitude));
+
+            callback.onRestaurantUpdate(restaurant);
+            restaurantWorkersNb.setText("("+restaurant.getUsersChoice()+")");
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -80,5 +101,6 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
 
     public interface RestaurantDisplayCallback {
         void onRestaurantClick(Restaurant restaurant);
+        void onRestaurantUpdate(Restaurant restaurant);
     }
 }
