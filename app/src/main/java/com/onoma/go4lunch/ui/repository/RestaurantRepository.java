@@ -1,5 +1,7 @@
 package com.onoma.go4lunch.ui.repository;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -77,43 +79,72 @@ public class RestaurantRepository {
     }
 
     public void updateRestaurantFavorite(Restaurant restaurant, Boolean update, RestaurantFavoriteQuery callback) {
-        db.collection("restaurants").document(restaurant.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        Map<String, Object> restaurantData = new HashMap<>();
+        restaurantData.put("id", restaurant.getId());
+        db.collection("restaurants").document(restaurant.getId()).set(restaurantData, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        document.getReference().collection("restaurants").document(currentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    DocumentSnapshot documentSecond = task.getResult();
-                                    if (documentSecond.exists()) {
-                                        if ((documentSecond.getString("uid") != null) && (Objects.equals(documentSecond.getString("uid"), currentUser().getUid()))) {
-                                            if (update) {
-                                                deleteRestaurantFavorite(restaurant, callback);
-                                            } else {
-                                                callback.getRestaurantFavorite(RestaurantFavoriteResult.CHECKED);
-                                            }
-                                        } else {
-                                            if (update) {
-                                                addRestaurantFavorite(restaurant, callback);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        });
+            public void onSuccess(Void unused) {
+                db.collection("restaurants").document(restaurant.getId()).collection("users").document(currentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                      if (task.isSuccessful()) {
+                          DocumentSnapshot document = task.getResult();
+                          Log.i("FAVORITE DOCUMENT", String.valueOf(document.exists()));
+                          // If favorite is set then we display or remove it
+                          if (document.exists()) {
+                              // We remove the favorite for the update
+                             if (update) {
+                                 deleteRestaurantFavorite(restaurant, callback);
+                             // We only display it when we first launch the restaurant activity
+                             } else {
+                                 callback.getRestaurantFavorite(RestaurantFavoriteResult.CHECKED);
+                             }
+                          // if user isn't present then we add him to the restaurant favorite
+                          } else {
+                              if (update) {
+                                  addRestaurantFavorite(restaurant, callback);
+                              }
+                          }
+                      }
                     }
-                }
+                });
             }
         });
     }
 
+    /*if (task.isSuccessful()) {
+        DocumentSnapshot document = task.getResult();
+        if (document.exists()) {
+            document.getReference().collection("restaurants").document(currentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot documentSecond = task.getResult();
+                        if (documentSecond.exists()) {
+                            if ((documentSecond.getString("uid") != null) && (Objects.equals(documentSecond.getString("uid"), currentUser().getUid()))) {
+                                Log.i("INFO FAVORITE UID", documentSecond.getString("uid"));
+                                if (update) {
+                                    deleteRestaurantFavorite(restaurant, callback);
+                                } else {
+                                    callback.getRestaurantFavorite(RestaurantFavoriteResult.CHECKED);
+                                }
+                            } else {
+                                Log.i("INFO FAVORITE UID", documentSecond.getString("uid"));
+                                if (update) {
+                                    addRestaurantFavorite(restaurant, callback);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }*/
+
     private void addRestaurantFavorite(Restaurant restaurant, RestaurantFavoriteQuery callback) {
         Map<String, Object> data = new HashMap<>();
         data.put("uid", currentUser().getUid());
-        db.collection("restaurants").document(restaurant.getId()).collection("users").document().set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection("restaurants").document(restaurant.getId()).collection("users").document(currentUser().getUid()).set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
                 callback.getRestaurantFavorite(RestaurantFavoriteResult.ADD);
@@ -124,9 +155,9 @@ public class RestaurantRepository {
     private void deleteRestaurantFavorite(Restaurant restaurant, RestaurantFavoriteQuery callback) {
         Map<String, Object> updates = new HashMap<>();
         updates.put("uid", FieldValue.delete());
-        db.collection("restaurants").document(restaurant.getId()).collection("users").document(currentUser().getUid()).update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+        db.collection("restaurants").document(restaurant.getId()).collection("users").document(currentUser().getUid()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
+            public void onSuccess(Void unused) {
                 callback.getRestaurantFavorite(RestaurantFavoriteResult.DELETE);
             }
         });
