@@ -28,7 +28,6 @@ public class UserViewModel extends ViewModel {
     private StateLiveData<List<User>> usersListLiveData = new StateLiveData<List<User>>();
     private StateLiveData<List<User>> usersFromRestaurantListLiveData = new StateLiveData<>();
     private MutableLiveData<UserRepository.RestaurantSelectionResult> restaurantSelectionLiveData = new MutableLiveData<>();
-    private StateLiveData<Integer> usersChoiceNb = new StateLiveData<>();
     private StateLiveData<Restaurant> currentUserChoice = new StateLiveData<>();
 
     public UserViewModel() {
@@ -101,34 +100,6 @@ public class UserViewModel extends ViewModel {
             @Override
             public void getAllUsersFailure(String error) {
                 usersListLiveData.postError(error);
-            }
-        });
-    }
-
-    public LiveData<StateData<Integer>> getUsersChoice(Restaurant restaurant) {
-        loadUsersChoice(restaurant);
-        return usersChoiceNb;
-    }
-
-    private void loadUsersChoice(Restaurant restaurant) {
-        mUserRepository.getAllUsers(new UserRepository.AllUsersQuery() {
-            @Override
-            public void getAllUsersSuccess(QuerySnapshot results) {
-                int usersNb = 0;
-                for (QueryDocumentSnapshot document : results) {
-                    if (document.getString("restaurantSelection") != null) {
-                        if (document.getString("restaurantSelection").equals(restaurant.getId())) {
-                            usersNb++;
-                        }
-                    }
-                }
-                Log.i("USERS CHOICE", String.valueOf(usersNb));
-                usersChoiceNb.postSuccess(usersNb);
-            }
-
-            @Override
-            public void getAllUsersFailure(String error) {
-                usersChoiceNb.postError(error);
             }
         });
     }

@@ -14,14 +14,18 @@ public class Restaurant implements Serializable {
     private String type;
     private double longitude;
     private double latitude;
+    private int nbSelection;
+    private int nbFavorite;
 
-    public Restaurant(String id, String name, String adress, String type, double longitude, double latitude) {
+    public Restaurant(String id, String name, String adress, String type, double longitude, double latitude, int nbSelection, int nbFavorite) {
         this.id = id;
         this.name = name;
         this.adress = adress;
         this.type = type;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.nbSelection = nbSelection;
+        this.nbFavorite = nbFavorite;
     }
 
     public String getId() {
@@ -72,6 +76,22 @@ public class Restaurant implements Serializable {
         this.latitude = latitude;
     }
 
+    public int getNbSelection() {
+        return nbSelection;
+    }
+
+    public void setNbSelection(int nbSelection) {
+        this.nbSelection = nbSelection;
+    }
+
+    public int getNbFavorite() {
+        return nbFavorite;
+    }
+
+    public void setNbFavorite(int nbFavorite) {
+        this.nbFavorite = nbFavorite;
+    }
+
     public String getDistance(double posLong, double posLat) {
         float[] results = new float[3];
         Location.distanceBetween(this.getLatitude(), this.getLongitude(), posLat, posLong, results);
@@ -92,12 +112,12 @@ public class Restaurant implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Restaurant that = (Restaurant) o;
-        return Double.compare(that.longitude, longitude) == 0 && Double.compare(that.latitude, latitude) == 0 && id.equals(that.id) && name.equals(that.name) && adress.equals(that.adress) && type.equals(that.type);
+        return Double.compare(that.longitude, longitude) == 0 && Double.compare(that.latitude, latitude) == 0 && nbSelection == that.nbSelection && nbFavorite == that.nbFavorite && id.equals(that.id) && name.equals(that.name) && adress.equals(that.adress) && Objects.equals(type, that.type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, adress, type, longitude, latitude);
+        return Objects.hash(id, name, adress, type, longitude, latitude, nbSelection, nbFavorite);
     }
 
     @Override
@@ -109,6 +129,8 @@ public class Restaurant implements Serializable {
                 ", type='" + type + '\'' +
                 ", longitude=" + longitude +
                 ", latitude=" + latitude +
+                ", nbSelection=" + nbSelection +
+                ", nbFavorite=" + nbFavorite +
                 '}';
     }
 }

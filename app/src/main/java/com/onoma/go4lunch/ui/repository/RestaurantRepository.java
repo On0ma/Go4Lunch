@@ -3,6 +3,7 @@ package com.onoma.go4lunch.ui.repository;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -11,8 +12,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.onoma.go4lunch.data.RestaurantApi;
@@ -84,10 +89,20 @@ public class RestaurantRepository {
                             restaurant.getProperties().getAddress(),
                             restaurant.getProperties().getCategory(),
                             restaurant.getCenter().get(0),
-                            restaurant.getCenter().get(1)
+                            restaurant.getCenter().get(1),
+                            0,
+                            0
                     );
 
-                    batch.set(restaurantRef, item, SetOptions.merge());
+                    Map<String,Object> restaurantData = new HashMap<>();
+                    restaurantData.put("id", item.getId());
+                    restaurantData.put("name", item.getName());
+                    restaurantData.put("adress", item.getAdress());
+                    restaurantData.put("type", item.getType());
+                    restaurantData.put("longitude", item.getLongitude());
+                    restaurantData.put("latitude", item.getLatitude());
+
+                    batch.set(restaurantRef, restaurantData, SetOptions.merge());
                     result.add(item);
                 }
                 batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -174,6 +189,49 @@ public class RestaurantRepository {
         });
     }
 
+    public void restaurantListener(RestaurantListenerQuery callback) {
+        db.collection("restaurants")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            callback.restaurantListenerFailure("Error getting data");
+                            return;
+                        }
+                        List<Map<String, Object>> restaurantListenerList = new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : value) {
+                            Double restaurantSelection = doc.getDouble("nbSelection");
+                            Double restaurantFavorite = doc.getDouble("nbFavorite");
+                            Map<String, Object> restaurantListenerData = new HashMap<>();
+                            restaurantListenerData.put("restaurantSelection", restaurantSelection);
+                            restaurantListenerData.put("restaurantFavorite", restaurantFavorite);
+                            restaurantListenerData.put("id", doc.getString("id"));
+                            restaurantListenerList.add(restaurantListenerData);
+                        }
+                        callback.restaurantListenerResult(restaurantListenerList);
+                    }
+                });
+    }
+
+    public Map<String, Double> restaurantListenerTest(Restaurant restaurant) {
+        Map<String, Double> restaurantListenerData = new HashMap<>();
+        db.collection("restaurants").document(restaurant.getId())
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error != null) {
+                            return;
+                        }
+                        Double restaurantSelection = value.getDouble("nbSelection");
+                        Double restaurantFavorite = value.getDouble("nbFavorite");
+                        restaurantListenerData.put("restaurantSelection", restaurantSelection);
+                        restaurantListenerData.put("restaurantFavorite", restaurantFavorite);
+                    }
+                });
+        return restaurantListenerData;
+    }
+
     public interface RestaurantQuery {
         void restaurantApiResult(List<Restaurant> restaurants);
         void restaurantApiFailure(String error);
@@ -181,6 +239,16 @@ public class RestaurantRepository {
 
     public interface RestaurantFavoriteQuery {
         void getRestaurantFavorite(RestaurantFavoriteResult result);
+    }
+
+    public interface RestaurantListenerQuery {
+        void restaurantListenerResult(List<Map<String, Object>> result);
+        void restaurantListenerFailure(String error);
+    }
+
+    public interface RestaurantListenerTestQuery {
+        void restaurantListenerResult(Map<String, Double> result);
+        void restaurantListenerFailure(String error);
     }
 
     public enum RestaurantFavoriteResult {

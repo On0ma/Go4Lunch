@@ -18,9 +18,11 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.model.User;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -130,7 +132,43 @@ public class UserRepository {
     private void addRestaurantSelection(Restaurant restaurant, RestaurantSelectionQuery callback) {
         Map<String, Object> data = new HashMap<>();
         data.put("restaurantSelection", restaurant.getId());
-        getUsersCollection().document(getCurrentUser().getUid()).set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection("users").document(getCurrentUser().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                WriteBatch batch = db.batch();
+                // If we already have a selection we need to remove it from the restaurant collection
+                if (documentSnapshot.contains("restaurantSelection")) {
+                    // Decrement old Selection from the Restaurant document
+                    Map<String, Object> restaurantDelete = new HashMap<>();
+                    batch.update(
+                            db.collection("restaurants").document(documentSnapshot.getString("restaurantSelection")),
+                            "nbSelection",
+                            FieldValue.increment(-1)
+                    );
+                }
+                // Update user field for restaurant selection
+                batch.set(
+                        getUsersCollection().document(getCurrentUser().getUid()),
+                        data,
+                        SetOptions.merge()
+                );
+                // increment restaurant field for selection number
+                batch.update(
+                        db.collection("restaurants").document(restaurant.getId()),
+                        "nbSelection",
+                        FieldValue.increment(1)
+                );
+                batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            callback.getRestaurantSelection(RestaurantSelectionResult.ADD);
+                        }
+                    }
+                });
+            }
+        });
+        /*getUsersCollection().document(getCurrentUser().getUid()).set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
                 db.collection("restaurants").document(restaurant.getId()).update("nbSelection", FieldValue.increment(1)).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -142,7 +180,7 @@ public class UserRepository {
                     }
                 });
             }
-        });
+        });*/
     }
 
     private void deleteRestaurantSelection(Restaurant restaurant, RestaurantSelectionQuery callback) {
@@ -183,7 +221,9 @@ public class UserRepository {
                                             result.getString("adress"),
                                             result.getString("type"),
                                             result.getDouble("longitude"),
-                                            result.getDouble("latitude")
+                                            result.getDouble("latitude"),
+                                            result.getDouble("restaurantSelection").intValue(),
+                                            result.getDouble("restaurantFavorite").intValue()
                                     );
                                     callback.getUserSelectionSuccess(restaurantSelected);
                                 } else {
@@ -198,6 +238,8 @@ public class UserRepository {
             }
         });
     }
+
+
 
     public Task<Void> signOut(Context context){
         return AuthUI.getInstance().signOut(context);

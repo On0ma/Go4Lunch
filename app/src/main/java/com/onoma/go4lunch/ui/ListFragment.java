@@ -20,7 +20,9 @@ import com.onoma.go4lunch.ui.utils.StateData;
 import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ListFragment extends Fragment implements RestaurantAdapter.RestaurantDisplayCallback {
 
@@ -57,6 +59,45 @@ public class ListFragment extends Fragment implements RestaurantAdapter.Restaura
             }
         });
 
+        /*mRestaurantsViewModel.getRestaurantListener().observe(getViewLifecycleOwner(), new Observer<StateData<List<Map<String, Object>>>>() {
+            @Override
+            public void onChanged(StateData<List<Map<String, Object>>> listStateData) {
+                switch (listStateData.getStatus()) {
+                    case SUCCESS:
+                        List<Restaurant> currentList = adapter.getCurrentList();
+                        List<Restaurant> newList = new ArrayList<>();
+                        newList.addAll(currentList);
+                        for (Map<String, Object> restaurant : listStateData.getData()) {
+                            String restaurantId = (String) restaurant.get("id");
+                            for (Restaurant currentRestaurant : currentList) {
+                                // The restaurant exist in the listener
+                                if (currentRestaurant.getId().equals(restaurantId)) {
+                                    int itemPos = currentList.indexOf(currentRestaurant);
+                                    int restaurantSelection = 0;
+                                    int restaurantFavorite = 0;
+                                    if (restaurant.get("restaurantSelection") != null) {
+                                        Double restaurantSelectionDouble = (Double) restaurant.get("restaurantSelection");
+                                        restaurantSelection = restaurantSelectionDouble.intValue();
+                                    }
+                                    if (restaurant.get("restaurantFavorite") != null) {
+                                        Double restaurantFavoriteDouble = (Double) restaurant.get("restaurantFavorite");
+                                        restaurantFavorite = restaurantFavoriteDouble.intValue();
+                                    }
+                                    currentRestaurant.setNbSelection(restaurantSelection);
+                                    currentRestaurant.setNbFavorite(restaurantFavorite);
+                                    newList.set(itemPos, currentRestaurant);
+                                }
+                            }
+                        }
+                        Log.i("NEW LIST", String.valueOf(newList));
+                        adapter.submitList(newList);
+                        break;
+                    case ERROR:
+                        Log.i("ERROR", listStateData.getError());
+                }
+            }
+        });*/
+
         return view;
     }
 
@@ -71,25 +112,5 @@ public class ListFragment extends Fragment implements RestaurantAdapter.Restaura
         Intent intent = new Intent(getActivity(), RestaurantActivity.class);
         intent.putExtra("restaurant", restaurant);
         startActivity(intent);
-    }
-
-    @Override
-    public void onRestaurantUpdate(Restaurant restaurant) {
-        mUserViewModel.getUsersChoice(restaurant).observe(getViewLifecycleOwner(), new Observer<StateData<Integer>>() {
-            @Override
-            public void onChanged(StateData<Integer> integerStateData) {
-                // Log.i("RESTAURANT UPDATE STATE", String.valueOf(integerStateData.getStatus()));
-                // Log.i("RESTAURANT UPDATE DATA", String.valueOf(integerStateData.getData()));
-                switch (integerStateData.getStatus()) {
-                    case SUCCESS:
-                        // restaurant.setUsersChoice(integerStateData.getData());
-                        // Log.i("RESTAURANT CHOICES", String.valueOf(integerStateData.getData()));
-                        break;
-                    case ERROR:
-                        Log.i("ERROR", integerStateData.getError());
-                        break;
-                }
-            }
-        });
     }
 }

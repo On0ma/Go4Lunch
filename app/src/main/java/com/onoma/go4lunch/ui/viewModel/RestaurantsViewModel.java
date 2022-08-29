@@ -10,15 +10,21 @@ import com.onoma.go4lunch.model.Feature;
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.model.User;
 import com.onoma.go4lunch.ui.repository.RestaurantRepository;
+import com.onoma.go4lunch.ui.utils.StateData;
+import com.onoma.go4lunch.ui.utils.StateLiveData;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RestaurantsViewModel extends ViewModel {
     private final RestaurantRepository mRestaurantRepository;
 
     private MutableLiveData<List<Restaurant>> restaurantsLiveData;
     private MutableLiveData<RestaurantRepository.RestaurantFavoriteResult> restaurantFavoriteLiveData = new MutableLiveData<>();
+    private StateLiveData<List<Map<String, Object>>> restaurantListenerLiveData = new StateLiveData<>();
+    public Map<String, Double> RestaurantListenerData = new HashMap<>();
 
     public RestaurantsViewModel() {
         mRestaurantRepository = RestaurantRepository.getInstance();
@@ -76,6 +82,29 @@ public class RestaurantsViewModel extends ViewModel {
             @Override
             public void getRestaurantFavorite(RestaurantRepository.RestaurantFavoriteResult result) {
                 restaurantFavoriteLiveData.setValue(result);
+            }
+        });
+    }
+
+    public Map<String, Double> getRestaurantTestListener(Restaurant restaurant) {
+        return mRestaurantRepository.restaurantListenerTest(restaurant);
+    }
+
+    public LiveData<StateData<List<Map<String, Object>>>> getRestaurantListener() {
+        loadRestaurantListener();
+        return restaurantListenerLiveData;
+    }
+
+    private void loadRestaurantListener() {
+        mRestaurantRepository.restaurantListener(new RestaurantRepository.RestaurantListenerQuery() {
+            @Override
+            public void restaurantListenerResult(List<Map<String, Object>> result) {
+                restaurantListenerLiveData.postSuccess(result);
+            }
+
+            @Override
+            public void restaurantListenerFailure(String error) {
+                restaurantListenerLiveData.postError(error);
             }
         });
     }
