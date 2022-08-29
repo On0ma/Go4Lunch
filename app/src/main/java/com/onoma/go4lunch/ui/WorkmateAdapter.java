@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.onoma.go4lunch.databinding.FragmentWorkmatesItemBinding;
 import com.onoma.go4lunch.model.User;
+import com.squareup.picasso.Picasso;
 
 
 public class WorkmateAdapter  extends ListAdapter<User, WorkmateAdapter.ViewHolder> {
@@ -60,9 +61,12 @@ public class WorkmateAdapter  extends ListAdapter<User, WorkmateAdapter.ViewHold
 
         public void bindTo(User user) {
             workersName.setText(user.getName());
-            Glide.with(workersPicture.getContext())
+            /*Glide.with(workersPicture.getContext())
                     .load(user.getPhotoUrl())
                     .apply(RequestOptions.circleCropTransform())
+                    .into(workersPicture);*/
+            Picasso.get()
+                    .load(user.getPhotoUrl())
                     .into(workersPicture);
         }
     }
