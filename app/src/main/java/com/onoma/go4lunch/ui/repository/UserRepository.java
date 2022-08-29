@@ -147,6 +147,21 @@ public class UserRepository {
         });
     }
 
+    public void getCurrentUserSelection(UserSelectionQuery callback) {
+        getUsersCollection().document(getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    if (task.getResult().getString("restaurantSelection") != null) {
+                        callback.getUserSelectionSuccess(task.getResult().getString("restaurantSelection"));
+                    } else {
+                        callback.getUserSelectionFailure("No restaurant selected");
+                    }
+                }
+            }
+        });
+    }
+
     public Task<Void> signOut(Context context){
         return AuthUI.getInstance().signOut(context);
     }
@@ -168,6 +183,11 @@ public class UserRepository {
 
     public interface RestaurantSelectionQuery {
         void getRestaurantSelection(RestaurantSelectionResult result);
+    }
+
+    public interface UserSelectionQuery {
+        void getUserSelectionSuccess(String result);
+        void getUserSelectionFailure(String error);
     }
 
     public enum RestaurantSelectionResult {

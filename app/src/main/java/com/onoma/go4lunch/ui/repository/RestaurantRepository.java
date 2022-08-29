@@ -89,7 +89,6 @@ public class RestaurantRepository {
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                       if (task.isSuccessful()) {
                           DocumentSnapshot document = task.getResult();
-                          Log.i("FAVORITE DOCUMENT", String.valueOf(document.exists()));
                           // If favorite is set then we display or remove it
                           if (document.exists()) {
                               // We remove the favorite for the update
@@ -111,35 +110,6 @@ public class RestaurantRepository {
             }
         });
     }
-
-    /*if (task.isSuccessful()) {
-        DocumentSnapshot document = task.getResult();
-        if (document.exists()) {
-            document.getReference().collection("restaurants").document(currentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot documentSecond = task.getResult();
-                        if (documentSecond.exists()) {
-                            if ((documentSecond.getString("uid") != null) && (Objects.equals(documentSecond.getString("uid"), currentUser().getUid()))) {
-                                Log.i("INFO FAVORITE UID", documentSecond.getString("uid"));
-                                if (update) {
-                                    deleteRestaurantFavorite(restaurant, callback);
-                                } else {
-                                    callback.getRestaurantFavorite(RestaurantFavoriteResult.CHECKED);
-                                }
-                            } else {
-                                Log.i("INFO FAVORITE UID", documentSecond.getString("uid"));
-                                if (update) {
-                                    addRestaurantFavorite(restaurant, callback);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    }*/
 
     private void addRestaurantFavorite(Restaurant restaurant, RestaurantFavoriteQuery callback) {
         Map<String, Object> data = new HashMap<>();

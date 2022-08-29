@@ -29,6 +29,7 @@ public class UserViewModel extends ViewModel {
     private StateLiveData<List<User>> usersFromRestaurantListLiveData = new StateLiveData<>();
     private MutableLiveData<UserRepository.RestaurantSelectionResult> restaurantSelectionLiveData = new MutableLiveData<>();
     private StateLiveData<Integer> usersChoiceNb = new StateLiveData<>();
+    private StateLiveData<String> currentUserChoice = new StateLiveData<>();
 
     public UserViewModel() {
         mUserRepository = UserRepository.getInstance();
@@ -181,6 +182,28 @@ public class UserViewModel extends ViewModel {
             @Override
             public void getRestaurantSelection(UserRepository.RestaurantSelectionResult result) {
                 restaurantSelectionLiveData.setValue(result);
+            }
+        });
+    }
+
+    public void initUserSelection() {
+        loadUserSelection();
+    }
+
+    public LiveData<StateData<String>> getUserSelection() {
+        return currentUserChoice;
+    }
+
+    private void loadUserSelection() {
+        mUserRepository.getCurrentUserSelection(new UserRepository.UserSelectionQuery() {
+            @Override
+            public void getUserSelectionSuccess(String result) {
+                currentUserChoice.postSuccess(result);
+            }
+
+            @Override
+            public void getUserSelectionFailure(String error) {
+                currentUserChoice.postError(error);
             }
         });
     }

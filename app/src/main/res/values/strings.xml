@@ -17,6 +17,7 @@
 
     <string name="user_location_permission_explanation">This app needs location permissions in order to show its functionality.</string>
     <string name="app_tagline">Find a nice restaurant and invite your co-workers for lunch!</string>
+    <string name="signin">Sign in</string>
     <string name="google_signin">Sign in With Google</string>
     <string name="facebook_signin">Sign in With Facebook</string>
     <string name="restaurant_background">Restaurant Background</string>

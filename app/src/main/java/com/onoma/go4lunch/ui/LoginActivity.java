@@ -2,6 +2,7 @@ package com.onoma.go4lunch.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -42,44 +43,16 @@ public class LoginActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        startSignInActivity();
+        // startSignInActivity();
 
         mUserViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        // setupListeners();
 
-        // Observe if user is logged in to start main activity
-        final Observer<Boolean> userLoggedObserver = new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if (aBoolean) {
-                    startMapActivity();
-                }
-            }
-        };
-        mUserViewModel.isCurrentUserLogged().observe(this, userLoggedObserver);
-    }
-
-    private void setupListeners(){
-        // Login Button
-        binding.loginButtonGoogle.setOnClickListener(view -> {
-            startSignInActivity();
-        });
-
-        binding.loginButtonFacebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startSignInActivity();
-            }
-        });
-    }
-
-    private void startSignInActivity(){
-
-        // Choose authentication providers
         List<AuthUI.IdpConfig> providers =
                 Arrays.asList(
                         new AuthUI.IdpConfig.GoogleBuilder().build(),
-                        new AuthUI.IdpConfig.FacebookBuilder().build()
+                        new AuthUI.IdpConfig.FacebookBuilder().build(),
+                        new AuthUI.IdpConfig.EmailBuilder().build(),
+                        new AuthUI.IdpConfig.TwitterBuilder().build()
                 );
 
         final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
@@ -95,17 +68,29 @@ public class LoginActivity extends AppCompatActivity {
         Intent signInIntent = AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
+                .setTheme(R.style.Theme_Go4Lunch)
+                .setIsSmartLockEnabled(false, true)
                 .build();
-        signInLauncher.launch(signInIntent);
 
-        // Launch the activity
-//        startActivityForResult(
-//                AuthUI.getInstance()
-//                        .createSignInIntentBuilder()
-//                        .setAvailableProviders(providers)
-//                        .setIsSmartLockEnabled(false, true)
-//                        .build(),
-//                RC_SIGN_IN);
+        binding.loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i(null, "LOGIN");
+                // startSignInActivity();
+                signInLauncher.launch(signInIntent);
+            }
+        });
+
+        // Observe if user is logged in to start main activity
+        final Observer<Boolean> userLoggedObserver = new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean) {
+                    startMapActivity();
+                }
+            }
+        };
+        mUserViewModel.isCurrentUserLogged().observe(this, userLoggedObserver);
     }
 
     private void onSignInResult(FirebaseAuthUIAuthenticationResult resultSignIn) {
@@ -117,7 +102,6 @@ public class LoginActivity extends AppCompatActivity {
                 mUserViewModel.createUser();
                 startMapActivity();
             }
-            // ...
         } else {
             // Sign in failed. If response is null the user canceled the
             // sign-in flow using the back button. Otherwise check

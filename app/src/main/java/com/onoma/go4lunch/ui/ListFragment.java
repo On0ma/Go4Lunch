@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.onoma.go4lunch.databinding.FragmentListBinding;
 import com.onoma.go4lunch.model.Restaurant;
+import com.onoma.go4lunch.ui.repository.RestaurantRepository;
 import com.onoma.go4lunch.ui.utils.StateData;
 import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
@@ -47,6 +48,7 @@ public class ListFragment extends Fragment implements RestaurantAdapter.Restaura
 
         mRestaurantsViewModel = new ViewModelProvider(requireActivity()).get(RestaurantsViewModel.class);
         mUserViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+
         mRestaurantsViewModel.getRestaurants(longitude, latitude).observe(getViewLifecycleOwner(), new Observer<List<Restaurant>>() {
             @Override
             public void onChanged(List<Restaurant> restaurants) {
@@ -76,10 +78,12 @@ public class ListFragment extends Fragment implements RestaurantAdapter.Restaura
         mUserViewModel.getUsersChoice(restaurant).observe(getViewLifecycleOwner(), new Observer<StateData<Integer>>() {
             @Override
             public void onChanged(StateData<Integer> integerStateData) {
+                // Log.i("RESTAURANT UPDATE STATE", String.valueOf(integerStateData.getStatus()));
+                // Log.i("RESTAURANT UPDATE DATA", String.valueOf(integerStateData.getData()));
                 switch (integerStateData.getStatus()) {
                     case SUCCESS:
-                        restaurant.setUsersChoice(integerStateData.getData());
-                        Log.i("RESTAURANT CHOICES", String.valueOf(integerStateData.getData()));
+                        // restaurant.setUsersChoice(integerStateData.getData());
+                        // Log.i("RESTAURANT CHOICES", String.valueOf(integerStateData.getData()));
                         break;
                     case ERROR:
                         Log.i("ERROR", integerStateData.getError());

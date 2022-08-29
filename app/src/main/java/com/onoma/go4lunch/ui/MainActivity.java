@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -116,6 +117,16 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             }
         };
         mUserViewModel.getUserData().observe(this, userObserver);
+
+        final Observer<StateData<String>> userChoiceObserver = new Observer<StateData<String>>() {
+            @Override
+            public void onChanged(StateData<String> stringStateData) {
+                switch (stringStateData.getStatus()) {
+                    case SUCCESS:
+
+                }
+            }
+        };
     }
 
     @Override
@@ -130,6 +141,19 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 (SearchView) menu.findItem(R.id.nav_search).getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+            @Override
+            public boolean onSuggestionSelect(int i) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onSuggestionClick(int i) {
+                return false;
+            }
+        });
 
         return true;
     }
@@ -161,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     // Show Selected Lunch activity
     private void displayLunch() {
         Log.i(null, "LUNCH");
+        mUserViewModel.initUserSelection();
     }
 
     // Show settings activity
