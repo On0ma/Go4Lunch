@@ -9,10 +9,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 import com.onoma.go4lunch.data.RestaurantApi;
 import com.onoma.go4lunch.data.RetroFitService;
 import com.onoma.go4lunch.model.Feature;
@@ -20,6 +22,7 @@ import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.model.RestaurantResponse;
 import com.onoma.go4lunch.model.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,11 +72,39 @@ public class RestaurantRepository {
         restaurantApi.getRestaurantList(queryAcessToken, queryCountry, queryLanguage, queryLimit, queryProximity, queryTypes).enqueue(new Callback<RestaurantResponse>() {
             @Override
             public void onResponse(Call<RestaurantResponse> call, Response<RestaurantResponse> response) {
-                callback.restaurantApiResult(response.body().getFeatures());
+                List<Restaurant> result = new ArrayList<>();
+                WriteBatch batch = db.batch();
+
+                for (Feature restaurant : response.body().getFeatures()) {
+                    DocumentReference restaurantRef = db.collection("restaurants").document(restaurant.getId());
+
+                    Restaurant item = new Restaurant(
+                            restaurant.getId(),
+                            restaurant.getTextFr(),
+                            restaurant.getProperties().getAddress(),
+                            restaurant.getProperties().getCategory(),
+                            restaurant.getCenter().get(0),
+                            restaurant.getCenter().get(1)
+                    );
+
+                    batch.set(restaurantRef, item, SetOptions.merge());
+                    result.add(item);
+                }
+                batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            callback.restaurantApiResult(result);
+                        } else {
+                            callback.restaurantApiFailure("Error writing restaurant data");
+                        }
+                    }
+                });
+                // callback.restaurantApiResult(response.body().getFeatures());
             }
             @Override
             public void onFailure(Call<RestaurantResponse> call, Throwable t) {
-                callback.restaurantApiFailure("Error occured", t);
+                callback.restaurantApiFailure("Error getting restaurant data");
             }
         });
     }
@@ -117,7 +148,12 @@ public class RestaurantRepository {
         db.collection("restaurants").document(restaurant.getId()).collection("users").document(currentUser().getUid()).set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
-                callback.getRestaurantFavorite(RestaurantFavoriteResult.ADD);
+                db.collection("restaurants").document(restaurant.getId()).update("nbFavorite", FieldValue.increment(1)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        callback.getRestaurantFavorite(RestaurantFavoriteResult.ADD);
+                    }
+                });
             }
         });
     }
@@ -128,14 +164,19 @@ public class RestaurantRepository {
         db.collection("restaurants").document(restaurant.getId()).collection("users").document(currentUser().getUid()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
-                callback.getRestaurantFavorite(RestaurantFavoriteResult.DELETE);
+                db.collection("restaurants").document(restaurant.getId()).update("nbFavorite", FieldValue.increment(-1)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        callback.getRestaurantFavorite(RestaurantFavoriteResult.DELETE);
+                    }
+                });
             }
         });
     }
 
     public interface RestaurantQuery {
-        void restaurantApiResult(List<Feature> restaurants);
-        void restaurantApiFailure(String error, Throwable t);
+        void restaurantApiResult(List<Restaurant> restaurants);
+        void restaurantApiFailure(String error);
     }
 
     public interface RestaurantFavoriteQuery {

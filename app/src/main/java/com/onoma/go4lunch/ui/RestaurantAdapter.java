@@ -88,7 +88,6 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
             restaurantDistance.setText(restaurant.getDistance(locationLongitude, locationLatitude));
 
             callback.onRestaurantUpdate(restaurant);
-            restaurantWorkersNb.setText("("+restaurant.getUsersChoice()+")");
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

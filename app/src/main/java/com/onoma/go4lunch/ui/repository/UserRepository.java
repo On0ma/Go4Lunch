@@ -30,6 +30,8 @@ public class UserRepository {
 
     private static final String COLLECTION_NAME = "users";
 
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
     private UserRepository() { }
 
     public static UserRepository getInstance() {
@@ -131,7 +133,14 @@ public class UserRepository {
         getUsersCollection().document(getCurrentUser().getUid()).set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
-                callback.getRestaurantSelection(RestaurantSelectionResult.ADD);
+                db.collection("restaurants").document(restaurant.getId()).update("nbSelection", FieldValue.increment(1)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            callback.getRestaurantSelection(RestaurantSelectionResult.ADD);
+                        }
+                    }
+                });
             }
         });
     }
@@ -142,7 +151,16 @@ public class UserRepository {
         getUsersCollection().document(getCurrentUser().getUid()).update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                callback.getRestaurantSelection(RestaurantSelectionResult.DELETE);
+                if (task.isSuccessful()) {
+                    db.collection("restaurants").document(restaurant.getId()).update("nbSelection", FieldValue.increment(-1)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                callback.getRestaurantSelection(RestaurantSelectionResult.DELETE);
+                            }
+                        }
+                    });
+                }
             }
         });
     }
@@ -152,8 +170,27 @@ public class UserRepository {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
-                    if (task.getResult().getString("restaurantSelection") != null) {
-                        callback.getUserSelectionSuccess(task.getResult().getString("restaurantSelection"));
+                    String restaurantSelection = task.getResult().getString("restaurantSelection");
+                    if (restaurantSelection != null) {
+                        db.collection("restaurants").document(restaurantSelection).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot result = task.getResult();
+                                    Restaurant restaurantSelected = new Restaurant(
+                                            restaurantSelection,
+                                            result.getString("name"),
+                                            result.getString("adress"),
+                                            result.getString("type"),
+                                            result.getDouble("longitude"),
+                                            result.getDouble("latitude")
+                                    );
+                                    callback.getUserSelectionSuccess(restaurantSelected);
+                                } else {
+                                    callback.getUserSelectionFailure("Error getting restaurant data");
+                                }
+                            }
+                        });
                     } else {
                         callback.getUserSelectionFailure("No restaurant selected");
                     }
@@ -186,7 +223,7 @@ public class UserRepository {
     }
 
     public interface UserSelectionQuery {
-        void getUserSelectionSuccess(String result);
+        void getUserSelectionSuccess(Restaurant result);
         void getUserSelectionFailure(String error);
     }
 

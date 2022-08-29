@@ -35,7 +35,7 @@ public class RestaurantsViewModel extends ViewModel {
     private void loadRestaurants(double longitude, double latitude) {
         List<Restaurant> result = new ArrayList<>();
         mRestaurantRepository.getRestaurants(longitude, latitude, new RestaurantRepository.RestaurantQuery() {
-            @Override
+            /*@Override
             public void restaurantApiResult(List<Feature> restaurants) {
                 for (Feature restaurant : restaurants) {
                     Restaurant item = new Restaurant(
@@ -44,18 +44,21 @@ public class RestaurantsViewModel extends ViewModel {
                             restaurant.getProperties().getAddress(),
                             restaurant.getProperties().getCategory(),
                             restaurant.getCenter().get(0),
-                            restaurant.getCenter().get(1),
-                            0,
-                            0
+                            restaurant.getCenter().get(1)
                     );
                     result.add(item);
                 }
                 restaurantsLiveData.setValue(result);
+            }*/
+
+            @Override
+            public void restaurantApiResult(List<Restaurant> restaurants) {
+                restaurantsLiveData.setValue(restaurants);
             }
 
             @Override
-            public void restaurantApiFailure(String error, Throwable t) {
-                Log.i("TAG", error, t);
+            public void restaurantApiFailure(String error) {
+                Log.i("TAG", error);
             }
         });
     }

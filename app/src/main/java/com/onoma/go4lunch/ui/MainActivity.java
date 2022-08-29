@@ -43,6 +43,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.onoma.go4lunch.R;
 import com.onoma.go4lunch.databinding.ActivityMainBinding;
 import com.onoma.go4lunch.databinding.HeaderNavigationDrawerBinding;
+import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.model.User;
 import com.onoma.go4lunch.ui.utils.StateData;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
@@ -118,15 +119,21 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         };
         mUserViewModel.getUserData().observe(this, userObserver);
 
-        final Observer<StateData<String>> userChoiceObserver = new Observer<StateData<String>>() {
+        final Observer<StateData<Restaurant>> userSelectionObserver = new Observer<StateData<Restaurant>>() {
             @Override
-            public void onChanged(StateData<String> stringStateData) {
+            public void onChanged(StateData<Restaurant> stringStateData) {
                 switch (stringStateData.getStatus()) {
                     case SUCCESS:
-
+                        Intent intent = new Intent(getApplicationContext(), RestaurantActivity.class);
+                        intent.putExtra("restaurant", stringStateData.getData());
+                        startActivity(intent);
+                        break;
+                    case ERROR:
+                        Toast.makeText(getApplicationContext(), stringStateData.getError(), Toast.LENGTH_SHORT).show();
                 }
             }
         };
+        mUserViewModel.getUserSelection().observe(this, userSelectionObserver);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class UserViewModel extends ViewModel {
     private StateLiveData<List<User>> usersFromRestaurantListLiveData = new StateLiveData<>();
     private MutableLiveData<UserRepository.RestaurantSelectionResult> restaurantSelectionLiveData = new MutableLiveData<>();
     private StateLiveData<Integer> usersChoiceNb = new StateLiveData<>();
-    private StateLiveData<String> currentUserChoice = new StateLiveData<>();
+    private StateLiveData<Restaurant> currentUserChoice = new StateLiveData<>();
 
     public UserViewModel() {
         mUserRepository = UserRepository.getInstance();
@@ -190,14 +190,14 @@ public class UserViewModel extends ViewModel {
         loadUserSelection();
     }
 
-    public LiveData<StateData<String>> getUserSelection() {
+    public LiveData<StateData<Restaurant>> getUserSelection() {
         return currentUserChoice;
     }
 
     private void loadUserSelection() {
         mUserRepository.getCurrentUserSelection(new UserRepository.UserSelectionQuery() {
             @Override
-            public void getUserSelectionSuccess(String result) {
+            public void getUserSelectionSuccess(Restaurant result) {
                 currentUserChoice.postSuccess(result);
             }
 
