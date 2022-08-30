@@ -17,9 +17,14 @@
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/menu/nav_menu.xml" value="0.25" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/menu/navigation_drawer.xml" value="0.12552083333333333" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/xml/searchable.xml" value="0.12291666666666666" />
+        <entry key="..\:/Users/monte/Documents/Enzo Formation/Go4Lunch/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1" />
+        <entry key="..\:/Users/monte/Documents/Enzo Formation/Go4Lunch/app/src/main/res/drawable/ic_baseline_view_list_24.xml" value="0.1" />
+        <entry key="..\:/Users/monte/Documents/Enzo Formation/Go4Lunch/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
+        <entry key="..\:/Users/monte/Documents/Enzo Formation/Go4Lunch/app/src/main/res/menu/nav_menu.xml" value="0.178125" />
       </map>
     </option>
   </component>
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

@@ -1,11 +1,9 @@
 package com.onoma.go4lunch.ui.viewModel;
 
-import static org.mockito.BDDMockito.given;
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.MutableLiveData;
 
-import com.onoma.go4lunch.ui.repository.UserRepository;
+import com.onoma.go4lunch.ui.repository.UserRepositoryImpl;
 
 import junit.framework.TestCase;
 
@@ -14,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -24,7 +21,7 @@ public class UserViewModelTest extends TestCase {
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Mock
-    private UserRepository userRepository;
+    private UserRepositoryImpl userRepository;
 
     private UserViewModel userViewModel;
 

@@ -16,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
@@ -24,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
@@ -141,26 +144,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.nav_menu, menu);
 
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager =
-                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView =
-                (SearchView) menu.findItem(R.id.nav_search).getActionView();
-        searchView.setSearchableInfo(
-                searchManager.getSearchableInfo(getComponentName()));
+        final String[] COUNTRIES = new String[] {
+                "Belgium", "France", "Italy", "Germany", "Spain"
+        };
 
-        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
-            @Override
-            public boolean onSuggestionSelect(int i) {
-
-                return false;
-            }
-
-            @Override
-            public boolean onSuggestionClick(int i) {
-                return false;
-            }
-        });
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, COUNTRIES);
+        AutoCompleteTextView textView = (AutoCompleteTextView) menu.findItem(R.id.nav_search);
+        textView.setAdapter(adapter);
 
         return true;
     }

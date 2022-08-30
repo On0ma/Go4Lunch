@@ -14,13 +14,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.onoma.go4lunch.R;
 import com.onoma.go4lunch.databinding.ActivityRestaurantBinding;
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.model.User;
-import com.onoma.go4lunch.ui.repository.RestaurantRepository;
-import com.onoma.go4lunch.ui.repository.UserRepository;
+import com.onoma.go4lunch.ui.repository.RestaurantRepositoryImpl;
+import com.onoma.go4lunch.ui.repository.UserRepositoryImpl;
 import com.onoma.go4lunch.ui.utils.StateData;
 import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
@@ -90,9 +89,9 @@ public class RestaurantActivity extends AppCompatActivity {
             }
         });
 
-        final Observer<UserRepository.RestaurantSelectionResult> updateRestaurantSelectionObserver = new Observer<UserRepository.RestaurantSelectionResult>() {
+        final Observer<UserRepositoryImpl.RestaurantSelectionResult> updateRestaurantSelectionObserver = new Observer<UserRepositoryImpl.RestaurantSelectionResult>() {
             @Override
-            public void onChanged(UserRepository.RestaurantSelectionResult restaurantSelectionResult) {
+            public void onChanged(UserRepositoryImpl.RestaurantSelectionResult restaurantSelectionResult) {
                 switch (restaurantSelectionResult) {
                     case ADD:
                     case CHECKED:
@@ -106,9 +105,9 @@ public class RestaurantActivity extends AppCompatActivity {
         };
         mUserViewModel.getRestaurantSelection().observe(this, updateRestaurantSelectionObserver);
 
-        final Observer<RestaurantRepository.RestaurantFavoriteResult> updateRestaurantFavoriteObserver = new Observer<RestaurantRepository.RestaurantFavoriteResult>() {
+        final Observer<RestaurantRepositoryImpl.RestaurantFavoriteResult> updateRestaurantFavoriteObserver = new Observer<RestaurantRepositoryImpl.RestaurantFavoriteResult>() {
             @Override
-            public void onChanged(RestaurantRepository.RestaurantFavoriteResult restaurantFavoriteResult) {
+            public void onChanged(RestaurantRepositoryImpl.RestaurantFavoriteResult restaurantFavoriteResult) {
                 switch (restaurantFavoriteResult) {
                     case ADD:
                     case CHECKED:

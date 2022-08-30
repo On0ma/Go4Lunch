@@ -15,14 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.onoma.go4lunch.databinding.FragmentListBinding;
 import com.onoma.go4lunch.model.Restaurant;
-import com.onoma.go4lunch.ui.repository.RestaurantRepository;
-import com.onoma.go4lunch.ui.utils.StateData;
 import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ListFragment extends Fragment implements RestaurantAdapter.RestaurantDisplayCallback {
 

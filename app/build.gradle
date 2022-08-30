@@ -50,6 +50,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-messaging'
 
     implementation 'com.mapbox.maps:android:10.6.0'
     implementation 'com.mapbox.plugin:maps-locationcomponent:10.6.0'

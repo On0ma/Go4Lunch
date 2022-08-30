@@ -1,7 +1,6 @@
 package com.onoma.go4lunch.ui.viewModel;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -13,7 +12,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.model.User;
-import com.onoma.go4lunch.ui.repository.UserRepository;
+import com.onoma.go4lunch.ui.repository.UserRepositoryImpl;
 import com.onoma.go4lunch.ui.utils.StateData;
 import com.onoma.go4lunch.ui.utils.StateLiveData;
 
@@ -21,21 +20,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserViewModel extends ViewModel {
-    private final UserRepository mUserRepository;
+    private final UserRepositoryImpl mUserRepository;
 
     private MutableLiveData<Boolean> userLoggedBoolean = new MutableLiveData<Boolean>();
     private StateLiveData<User> userLiveData;
     private StateLiveData<List<User>> usersListLiveData = new StateLiveData<List<User>>();
     private StateLiveData<List<User>> usersFromRestaurantListLiveData = new StateLiveData<>();
-    private MutableLiveData<UserRepository.RestaurantSelectionResult> restaurantSelectionLiveData = new MutableLiveData<>();
+    private MutableLiveData<UserRepositoryImpl.RestaurantSelectionResult> restaurantSelectionLiveData = new MutableLiveData<>();
     private StateLiveData<Restaurant> currentUserChoice = new StateLiveData<>();
 
     public UserViewModel() {
-        mUserRepository = UserRepository.getInstance();
+        mUserRepository = UserRepositoryImpl.getInstance();
     }
 
     private Boolean getUserLoggedIn() {
-        return (mUserRepository.getCurrentUser() != null);
+        return (mUserRepository.getIsUserLoggedIn());
     }
 
     public LiveData<Boolean> isCurrentUserLogged() {
@@ -56,16 +55,10 @@ public class UserViewModel extends ViewModel {
     }
 
     private void loadUserData() {
-        mUserRepository.getUserData(new UserRepository.UserQuery() {
+        mUserRepository.getUserData(new UserRepositoryImpl.UserQuery() {
             @Override
-            public void getUserSuccess(DocumentSnapshot userDocument) {
-                User userData = new User(
-                        userDocument.getString("uid"),
-                        userDocument.getString("name"),
-                        userDocument.getString("email"),
-                        userDocument.getString("photoUrl")
-                );
-                userLiveData.postSuccess(userData);
+            public void getUserSuccess(User user) {
+                userLiveData.postSuccess(user);
             }
 
             @Override
@@ -81,20 +74,10 @@ public class UserViewModel extends ViewModel {
     }
 
     private void loadAllUsers() {
-        mUserRepository.getAllUsers(new UserRepository.AllUsersQuery() {
+        mUserRepository.getAllUsers(new UserRepositoryImpl.AllUsersQuery() {
             @Override
-            public void getAllUsersSuccess(QuerySnapshot results) {
-                List<User> userList = new ArrayList<>();
-                for (QueryDocumentSnapshot document : results) {
-                    User newUser = new User(
-                            document.getString("uid"),
-                            document.getString("name"),
-                            document.getString("email"),
-                            document.getString("photoUrl")
-                    );
-                    userList.add(newUser);
-                }
-                usersListLiveData.postSuccess(userList);
+            public void getAllUsersSuccess(List<User> results) {
+                usersListLiveData.postSuccess(results);
             }
 
             @Override
@@ -111,22 +94,10 @@ public class UserViewModel extends ViewModel {
     }
 
     private void loadUsersFromRestaurant(Restaurant restaurant) {
-        mUserRepository.getAllUsers(new UserRepository.AllUsersQuery() {
+        mUserRepository.getAllUsersFromRestaurant(restaurant, new UserRepositoryImpl.AllUsersQuery() {
             @Override
-            public void getAllUsersSuccess(QuerySnapshot results) {
-                List<User> userList = new ArrayList<>();
-                for (QueryDocumentSnapshot document : results) {
-                    if ((document.getString("restaurantSelection") != null) && (document.getString("restaurantSelection").equals(restaurant.getId()))) {
-                        User newUser = new User(
-                                document.getString("uid"),
-                                document.getString("name"),
-                                document.getString("email"),
-                                document.getString("photoUrl")
-                        );
-                        userList.add(newUser);
-                    }
-                }
-                usersFromRestaurantListLiveData.postSuccess(userList);
+            public void getAllUsersSuccess(List<User> results) {
+                usersFromRestaurantListLiveData.postSuccess(results);
             }
 
             @Override
@@ -144,14 +115,14 @@ public class UserViewModel extends ViewModel {
         loadRestaurantSelection(restaurant, update);
     }
 
-    public LiveData<UserRepository.RestaurantSelectionResult> getRestaurantSelection() {
+    public LiveData<UserRepositoryImpl.RestaurantSelectionResult> getRestaurantSelection() {
         return restaurantSelectionLiveData;
     }
 
     private void loadRestaurantSelection(Restaurant restaurant, Boolean update) {
-        mUserRepository.updateRestaurantSelection(restaurant, update, new UserRepository.RestaurantSelectionQuery() {
+        mUserRepository.updateRestaurantSelection(restaurant, update, new UserRepositoryImpl.RestaurantSelectionQuery() {
             @Override
-            public void getRestaurantSelection(UserRepository.RestaurantSelectionResult result) {
+            public void getRestaurantSelection(UserRepositoryImpl.RestaurantSelectionResult result) {
                 restaurantSelectionLiveData.setValue(result);
             }
         });
@@ -166,7 +137,7 @@ public class UserViewModel extends ViewModel {
     }
 
     private void loadUserSelection() {
-        mUserRepository.getCurrentUserSelection(new UserRepository.UserSelectionQuery() {
+        mUserRepository.getCurrentUserSelection(new UserRepositoryImpl.UserSelectionQuery() {
             @Override
             public void getUserSelectionSuccess(Restaurant result) {
                 currentUserChoice.postSuccess(result);

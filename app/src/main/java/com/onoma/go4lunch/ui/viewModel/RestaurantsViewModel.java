@@ -6,10 +6,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.onoma.go4lunch.model.Feature;
 import com.onoma.go4lunch.model.Restaurant;
-import com.onoma.go4lunch.model.User;
-import com.onoma.go4lunch.ui.repository.RestaurantRepository;
+import com.onoma.go4lunch.ui.repository.RestaurantRepositoryImpl;
 import com.onoma.go4lunch.ui.utils.StateData;
 import com.onoma.go4lunch.ui.utils.StateLiveData;
 
@@ -19,15 +17,15 @@ import java.util.List;
 import java.util.Map;
 
 public class RestaurantsViewModel extends ViewModel {
-    private final RestaurantRepository mRestaurantRepository;
+    private final RestaurantRepositoryImpl mRestaurantRepository;
 
     private MutableLiveData<List<Restaurant>> restaurantsLiveData;
-    private MutableLiveData<RestaurantRepository.RestaurantFavoriteResult> restaurantFavoriteLiveData = new MutableLiveData<>();
+    private MutableLiveData<RestaurantRepositoryImpl.RestaurantFavoriteResult> restaurantFavoriteLiveData = new MutableLiveData<>();
     private StateLiveData<List<Map<String, Object>>> restaurantListenerLiveData = new StateLiveData<>();
     public Map<String, Double> RestaurantListenerData = new HashMap<>();
 
     public RestaurantsViewModel() {
-        mRestaurantRepository = RestaurantRepository.getInstance();
+        mRestaurantRepository = RestaurantRepositoryImpl.getInstance();
     }
 
     public LiveData<List<Restaurant>> getRestaurants(double longitude, double latitude) {
@@ -40,7 +38,7 @@ public class RestaurantsViewModel extends ViewModel {
 
     private void loadRestaurants(double longitude, double latitude) {
         List<Restaurant> result = new ArrayList<>();
-        mRestaurantRepository.getRestaurants(longitude, latitude, new RestaurantRepository.RestaurantQuery() {
+        mRestaurantRepository.getRestaurants(longitude, latitude, new RestaurantRepositoryImpl.RestaurantQuery() {
             /*@Override
             public void restaurantApiResult(List<Feature> restaurants) {
                 for (Feature restaurant : restaurants) {
@@ -73,14 +71,14 @@ public class RestaurantsViewModel extends ViewModel {
         loadRestaurantFavorite(restaurant, update);
     }
 
-    public LiveData<RestaurantRepository.RestaurantFavoriteResult> getRestaurantFavorite() {
+    public LiveData<RestaurantRepositoryImpl.RestaurantFavoriteResult> getRestaurantFavorite() {
         return restaurantFavoriteLiveData;
     }
 
     private void loadRestaurantFavorite(Restaurant restaurant, Boolean update) {
-        mRestaurantRepository.updateRestaurantFavorite(restaurant, update, new RestaurantRepository.RestaurantFavoriteQuery() {
+        mRestaurantRepository.updateRestaurantFavorite(restaurant, update, new RestaurantRepositoryImpl.RestaurantFavoriteQuery() {
             @Override
-            public void getRestaurantFavorite(RestaurantRepository.RestaurantFavoriteResult result) {
+            public void getRestaurantFavorite(RestaurantRepositoryImpl.RestaurantFavoriteResult result) {
                 restaurantFavoriteLiveData.setValue(result);
             }
         });
@@ -96,7 +94,7 @@ public class RestaurantsViewModel extends ViewModel {
     }
 
     private void loadRestaurantListener() {
-        mRestaurantRepository.restaurantListener(new RestaurantRepository.RestaurantListenerQuery() {
+        mRestaurantRepository.restaurantListener(new RestaurantRepositoryImpl.RestaurantListenerQuery() {
             @Override
             public void restaurantListenerResult(List<Map<String, Object>> result) {
                 restaurantListenerLiveData.postSuccess(result);
