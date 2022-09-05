@@ -87,9 +87,12 @@ public class UserViewModel extends ViewModel {
         });
     }
 
-    // TODO load user from init and listen to change with firestore listeners
-    public LiveData<StateData<List<User>>> getUsersFromRestaurant(Restaurant restaurant) {
+    public void initUsersFromRestaurant(Restaurant restaurant) {
         loadUsersFromRestaurant(restaurant);
+    }
+
+    // TODO load user from init and listen to change with firestore listeners
+    public LiveData<StateData<List<User>>> getUsersFromRestaurant() {
         return usersFromRestaurantListLiveData;
     }
 

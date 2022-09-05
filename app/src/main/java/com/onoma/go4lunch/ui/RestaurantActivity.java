@@ -59,6 +59,8 @@ public class RestaurantActivity extends AppCompatActivity {
         RestaurantWorkersAdapter adapter = new RestaurantWorkersAdapter();
         recyclerView.setAdapter(adapter);
 
+        mUserViewModel.initUsersFromRestaurant(restaurant);
+
         final Observer<StateData<List<User>>> usersFromRestaurantObserver = new Observer<StateData<List<User>>>() {
             @Override
             public void onChanged(StateData<List<User>> listStateData) {
@@ -71,8 +73,7 @@ public class RestaurantActivity extends AppCompatActivity {
                 }
             }
         };
-
-        mUserViewModel.getUsersFromRestaurant(restaurant).observe(this, usersFromRestaurantObserver);
+        mUserViewModel.getUsersFromRestaurant().observe(this, usersFromRestaurantObserver);
 
         binding.restaurantLikeButton.setOnClickListener(new View.OnClickListener() {
             @Override

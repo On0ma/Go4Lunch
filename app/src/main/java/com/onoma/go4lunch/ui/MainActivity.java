@@ -2,12 +2,15 @@ package com.onoma.go4lunch.ui;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -26,6 +29,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -51,6 +56,8 @@ import com.onoma.go4lunch.model.User;
 import com.onoma.go4lunch.ui.utils.StateData;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     FusedLocationProviderClient mFusedLocationProviderClient;
@@ -68,9 +75,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     private final double LONGITUDE = 2.356526;
     private final double LATITUDE = 48.831351;
+    private final String DEFAULT_CHANNEL_ID = "0";
 
     private double longitude;
     private double latitude;
+
+    private Restaurant currentRestaurant;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,6 +115,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         // Set a different tab by default on launch
         // binding.bottomNavigation.setSelectedItemId(R.id.nav_list);
 
+        mUserViewModel.initUserSelection();
+
         final Observer<StateData<User>> userObserver = new Observer<StateData<User>>() {
             @Override
             public void onChanged(StateData<User> user) {
@@ -127,9 +139,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             public void onChanged(StateData<Restaurant> stringStateData) {
                 switch (stringStateData.getStatus()) {
                     case SUCCESS:
-                        Intent intent = new Intent(getApplicationContext(), RestaurantActivity.class);
+                       /* Intent intent = new Intent(getApplicationContext(), RestaurantActivity.class);
                         intent.putExtra("restaurant", stringStateData.getData());
-                        startActivity(intent);
+                        startActivity(intent);*/
+                        mUserViewModel.initUsersFromRestaurant(stringStateData.getData());
+                        currentRestaurant = stringStateData.getData();
+                        Log.i("RESTAURANT ACTUEL", String.valueOf(currentRestaurant));
                         break;
                     case ERROR:
                         Toast.makeText(getApplicationContext(), stringStateData.getError(), Toast.LENGTH_SHORT).show();
@@ -137,6 +152,33 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             }
         };
         mUserViewModel.getUserSelection().observe(this, userSelectionObserver);
+
+        final Observer<StateData<List<User>>> usersFromRestaurantObserver = new Observer<StateData<List<User>>>() {
+            @Override
+            public void onChanged(StateData<List<User>> listStateData) {
+                switch (listStateData.getStatus()) {
+                    case SUCCESS:
+                        List<User> users = listStateData.getData();
+
+                        String names = "";
+                        for (User user : users) {
+                            if (users.indexOf(user)+1 == users.size()) {
+                                names = names + user.getName();
+                            } else {
+                                names = names + user.getName() + ", ";
+                            }
+                            Log.i("USERS FROM REST", names);
+                        }
+                        setNotification(currentRestaurant, names);
+                        break;
+                    case ERROR:
+                        Log.i(null, listStateData.getError());
+                }
+            }
+        };
+        mUserViewModel.getUsersFromRestaurant().observe(this, usersFromRestaurantObserver);
+
+        createNotificationChannel();
     }
 
     @Override
@@ -154,6 +196,38 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         textView.setAdapter(adapter);
 
         return true;
+    }
+
+    private void setNotification(Restaurant restaurant, String names) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, DEFAULT_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_baseline_local_dining_24)
+                .setContentTitle(getString(R.string.notification_content_title))
+                .setContentText(getString(R.string.notification_content_description, restaurant.getName(), restaurant.getAdress(), names))
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(getString(R.string.notification_content_description, restaurant.getName(), restaurant.getAdress(), names)))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+        // notificationId is a unique int for each notification that you must define
+        notificationManager.notify(100, builder.build());
+
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.default_notification_channel_name);
+            String description = getString(R.string.default_notification_channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(DEFAULT_CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     // Open the drawer on click on the menu button

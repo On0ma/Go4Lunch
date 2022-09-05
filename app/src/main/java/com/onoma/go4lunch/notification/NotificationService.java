@@ -1,3 +1,4 @@
+/*
 package com.onoma.go4lunch.notification;
 
 import android.app.NotificationChannel;
@@ -71,3 +72,4 @@ public class NotificationService extends FirebaseMessagingService {
         notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
     }
 }
+*/

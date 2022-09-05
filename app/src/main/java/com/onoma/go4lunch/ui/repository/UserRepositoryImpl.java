@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class UserRepositoryImpl implements UserRepository {
 
@@ -128,7 +129,7 @@ public class UserRepositoryImpl implements UserRepository {
                 if (task.isSuccessful()) {
                     List<User> userList = new ArrayList<>();
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        if ((document.getString("restaurantSelection") != null) && (document.getString("restaurantSelection").equals(restaurant.getId()))) {
+                        if ((document.getString("restaurantSelection") != null) && (document.getString("restaurantSelection").equals(restaurant.getId())) && (!Objects.equals(document.getString("uid"), getCurrentUser().getUid()))) {
                             User newUser = new User(
                                     document.getString("uid"),
                                     document.getString("name"),
