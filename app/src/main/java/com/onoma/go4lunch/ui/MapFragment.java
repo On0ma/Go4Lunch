@@ -88,7 +88,8 @@ public class MapFragment extends Fragment {
     }
 
     private void addMapAnnotations(List<Restaurant> restaurants) {
-        Bitmap icon = drawableToBitmap(AppCompatResources.getDrawable(getContext(), R.drawable.ic_baseline_location_on_24));
+        Bitmap icon = drawableToBitmap(AppCompatResources.getDrawable(getContext(), R.drawable.location_pin));
+        Bitmap iconSelected = drawableToBitmap(AppCompatResources.getDrawable(getContext(), R.drawable.location_pin_selected));
         AnnotationPlugin annotationApi = AnnotationPluginImplKt.getAnnotations(mapview);
         PointAnnotationManager pointAnnotationManager = PointAnnotationManagerKt.createPointAnnotationManager(annotationApi, new AnnotationConfig());
         List<Double> textOffset = new ArrayList<>();
@@ -96,13 +97,22 @@ public class MapFragment extends Fragment {
         textOffset.add(1.00);
 
         for (Restaurant restaurant : restaurants) {
-            PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
-                    .withIconImage(icon)
-                    .withTextField(restaurant.getName())
-                    .withTextSize(12.00)
-                    .withTextOffset(textOffset)
-                    .withPoint(Point.fromLngLat(restaurant.getLongitude(), restaurant.getLatitude()));
-            pointAnnotationManager.create(pointAnnotationOptions);
+            if (restaurant.getNbSelection() > 0) {
+                PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
+                        .withIconImage(iconSelected)
+                        .withTextSize(12.00)
+                        .withTextOffset(textOffset)
+                        .withPoint(Point.fromLngLat(restaurant.getLongitude(), restaurant.getLatitude()));
+                pointAnnotationManager.create(pointAnnotationOptions);
+            } else {
+                PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
+                        .withIconImage(icon)
+                        .withTextSize(12.00)
+                        .withTextOffset(textOffset)
+                        .withPoint(Point.fromLngLat(restaurant.getLongitude(), restaurant.getLatitude()));
+                pointAnnotationManager.create(pointAnnotationOptions);
+            }
+
         }
 
         pointAnnotationManager.addClickListener(new OnPointAnnotationClickListener() {

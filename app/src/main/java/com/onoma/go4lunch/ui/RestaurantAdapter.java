@@ -57,7 +57,6 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.bindTo(getItem(position), callback);
-        holder.restaurantListenerTest(getItem(position));
     }
 
 
@@ -74,6 +73,7 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
 
         @Override
         public Object getChangePayload(@NonNull Restaurant oldItem, @NonNull Restaurant newItem) {
+            Log.i(null,"changed");
             return null;
         }
     };
@@ -98,52 +98,15 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
             restaurantStar3 = itemBinding.fragmentListRating3;
         }
 
-        public void restaurantListenerTest(Restaurant restaurant) {
-            Map<String, Integer> restaurantListenerData = new HashMap<>();
-            FirebaseFirestore.getInstance().collection("restaurants").document(restaurant.getId())
-                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                            if (error != null) {
-                                Log.i("ERROR", "Error getting data", error);
-                                return;
-                            }
-                            int restaurantSelection = 0;
-                            int restaurantFavorite = 0;
-                            if (value.get("nbSelection") != null) {
-                                Double restaurantSelectionDouble = value.getDouble("nbSelection");
-                                restaurantSelection = restaurantSelectionDouble.intValue();
-                            }
-                            if (value.get("nbFavorite") != null) {
-                                Double restaurantFavoriteDouble = value.getDouble("nbFavorite");
-                                restaurantFavorite = restaurantFavoriteDouble.intValue();
-                            }
-                            restaurantListenerData.put("restaurantSelection", restaurantSelection);
-                            restaurantListenerData.put("restaurantFavorite", restaurantFavorite);
-                            updateRestaurant(restaurantListenerData);
-                        }
-                    });
-        }
-
-        public void updateRestaurant(Map<String, Integer> updateData) {
-            int selectionNb = 0;
-            int favoriteNb = 0;
-            if (updateData.get("restaurantSelection") != null) {
-                selectionNb = updateData.get("restaurantSelection");
-            }
-            if (updateData.get("restaurantFavorite") != null) {
-                favoriteNb = updateData.get("restaurantFavorite");
-            }
-
-            Log.i("SELECTION DATA", String.valueOf(selectionNb));
-            Log.i("FAVORITE DATA", String.valueOf(favoriteNb));
-            restaurantWorkersNb.setText("("+selectionNb+")");
-
-            Log.i("SELECTION", String.valueOf(selectionNb));
-            Log.i("FAVORITE", String.valueOf(favoriteNb));
+        public void bindTo(Restaurant restaurant, RestaurantDisplayCallback callback) {
+            restaurantName.setText(restaurant.getName());
+            restaurantAdress.setText(restaurant.getAdress());
+            restaurantDistance.setText(restaurant.getDistance(locationLongitude, locationLatitude));
+            restaurantWorkersNb.setText("("+restaurant.getNbSelection()+")");
 
             Drawable starFilled = restaurantStar1.getContext().getDrawable(R.drawable.ic_baseline_star_24);
             Drawable starOutline = restaurantStar1.getContext().getDrawable(R.drawable.ic_baseline_star_outline_24);
+            int favoriteNb = restaurant.getNbFavorite();
 
             if (favoriteNb >= 10) {
                 // 3 stars
@@ -166,12 +129,6 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
                 restaurantStar2.setImageDrawable(starOutline);
                 restaurantStar3.setImageDrawable(starOutline);
             }
-        }
-
-        public void bindTo(Restaurant restaurant, RestaurantDisplayCallback callback) {
-            restaurantName.setText(restaurant.getName());
-            restaurantAdress.setText(restaurant.getAdress());
-            restaurantDistance.setText(restaurant.getDistance(locationLongitude, locationLatitude));
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

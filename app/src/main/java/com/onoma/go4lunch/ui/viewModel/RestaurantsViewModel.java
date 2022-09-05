@@ -2,10 +2,15 @@ package com.onoma.go4lunch.ui.viewModel;
 
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.ui.repository.RestaurantRepositoryImpl;
 import com.onoma.go4lunch.ui.utils.StateData;
@@ -37,27 +42,40 @@ public class RestaurantsViewModel extends ViewModel {
     }
 
     private void loadRestaurants(double longitude, double latitude) {
-        List<Restaurant> result = new ArrayList<>();
         mRestaurantRepository.getRestaurants(longitude, latitude, new RestaurantRepositoryImpl.RestaurantQuery() {
-            /*@Override
-            public void restaurantApiResult(List<Feature> restaurants) {
-                for (Feature restaurant : restaurants) {
-                    Restaurant item = new Restaurant(
-                            restaurant.getId(),
-                            restaurant.getTextFr(),
-                            restaurant.getProperties().getAddress(),
-                            restaurant.getProperties().getCategory(),
-                            restaurant.getCenter().get(0),
-                            restaurant.getCenter().get(1)
-                    );
-                    result.add(item);
-                }
-                restaurantsLiveData.setValue(result);
-            }*/
-
             @Override
             public void restaurantApiResult(List<Restaurant> restaurants) {
-                restaurantsLiveData.setValue(restaurants);
+                List<Restaurant> restaurantListUpdate = new ArrayList<>();
+                restaurantListUpdate.addAll(restaurants);
+
+                for (Restaurant restaurant : restaurantListUpdate) {
+                    FirebaseFirestore.getInstance().collection("restaurants").document(restaurant.getId())
+                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                                    if (error != null) {
+                                        Log.i("ERROR", "Error getting data", error);
+                                        return;
+                                    }
+                                    int restaurantPos = restaurantListUpdate.indexOf(restaurant);
+                                    int restaurantSelection = 0;
+                                    int restaurantFavorite = 0;
+                                    if (value.get("nbSelection") != null) {
+                                        Double restaurantSelectionDouble = value.getDouble("nbSelection");
+                                        restaurantSelection = restaurantSelectionDouble.intValue();
+                                    }
+                                    if (value.get("nbFavorite") != null) {
+                                        Double restaurantFavoriteDouble = value.getDouble("nbFavorite");
+                                        restaurantFavorite = restaurantFavoriteDouble.intValue();
+                                    }
+                                    restaurant.setNbFavorite(restaurantFavorite);
+                                    restaurant.setNbSelection(restaurantSelection);
+                                    restaurantListUpdate.set(restaurantPos, restaurant);
+                                    restaurantsLiveData.setValue(restaurantListUpdate);
+                                }
+                            });
+                }
+                restaurantsLiveData.setValue(restaurantListUpdate);
             }
 
             @Override

@@ -50,49 +50,9 @@ public class ListFragment extends Fragment implements RestaurantAdapter.Restaura
         mRestaurantsViewModel.getRestaurants(longitude, latitude).observe(getViewLifecycleOwner(), new Observer<List<Restaurant>>() {
             @Override
             public void onChanged(List<Restaurant> restaurants) {
-                Log.i(null, String.valueOf(restaurants));
                 adapter.submitList(restaurants);
             }
         });
-
-        /*mRestaurantsViewModel.getRestaurantListener().observe(getViewLifecycleOwner(), new Observer<StateData<List<Map<String, Object>>>>() {
-            @Override
-            public void onChanged(StateData<List<Map<String, Object>>> listStateData) {
-                switch (listStateData.getStatus()) {
-                    case SUCCESS:
-                        List<Restaurant> currentList = adapter.getCurrentList();
-                        List<Restaurant> newList = new ArrayList<>();
-                        newList.addAll(currentList);
-                        for (Map<String, Object> restaurant : listStateData.getData()) {
-                            String restaurantId = (String) restaurant.get("id");
-                            for (Restaurant currentRestaurant : currentList) {
-                                // The restaurant exist in the listener
-                                if (currentRestaurant.getId().equals(restaurantId)) {
-                                    int itemPos = currentList.indexOf(currentRestaurant);
-                                    int restaurantSelection = 0;
-                                    int restaurantFavorite = 0;
-                                    if (restaurant.get("restaurantSelection") != null) {
-                                        Double restaurantSelectionDouble = (Double) restaurant.get("restaurantSelection");
-                                        restaurantSelection = restaurantSelectionDouble.intValue();
-                                    }
-                                    if (restaurant.get("restaurantFavorite") != null) {
-                                        Double restaurantFavoriteDouble = (Double) restaurant.get("restaurantFavorite");
-                                        restaurantFavorite = restaurantFavoriteDouble.intValue();
-                                    }
-                                    currentRestaurant.setNbSelection(restaurantSelection);
-                                    currentRestaurant.setNbFavorite(restaurantFavorite);
-                                    newList.set(itemPos, currentRestaurant);
-                                }
-                            }
-                        }
-                        Log.i("NEW LIST", String.valueOf(newList));
-                        adapter.submitList(newList);
-                        break;
-                    case ERROR:
-                        Log.i("ERROR", listStateData.getError());
-                }
-            }
-        });*/
 
         return view;
     }
