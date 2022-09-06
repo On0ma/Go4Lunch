@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,7 @@ public class MapFragment extends Fragment {
 
         double longitude = getArguments().getDouble("longitude");
         double latitude = getArguments().getDouble("latitude");
+        Log.i("longitude", String.valueOf(longitude));
 
         mRestaurantsViewModel = new ViewModelProvider(requireActivity()).get(RestaurantsViewModel.class);
         mapview = binding.mapView;

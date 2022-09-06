@@ -30,8 +30,14 @@ public class RestaurantsViewModel extends ViewModel {
     private StateLiveData<List<Map<String, Object>>> restaurantListenerLiveData = new StateLiveData<>();
     public Map<String, Double> RestaurantListenerData = new HashMap<>();
 
+    private List<Restaurant> restaurantApiList = new ArrayList<>();
+
     public RestaurantsViewModel() {
         mRestaurantRepository = RestaurantRepositoryImpl.getInstance();
+    }
+
+    public LiveData<List<Restaurant>> initRestaurants() {
+        return restaurantsLiveData;
     }
 
     public LiveData<List<Restaurant>> getRestaurants(double longitude, double latitude) {
@@ -42,8 +48,8 @@ public class RestaurantsViewModel extends ViewModel {
         return  restaurantsLiveData;
     }
 
-    public void getRestaurantsFromSearch(String query) {
-        mRestaurantRepository.getRestaurantsFromQuery(query, new RestaurantRepository.RestaurantQuery() {
+    public void getRestaurantsFromSearch(String query, List<Restaurant> restaurants) {
+        /*mRestaurantRepository.getRestaurantsFromQuery(query, new RestaurantRepository.RestaurantQuery() {
             @Override
             public void restaurantApiResult(List<Restaurant> restaurants) {
                 restaurantsLiveData.setValue(restaurants);
@@ -53,13 +59,27 @@ public class RestaurantsViewModel extends ViewModel {
             public void restaurantApiFailure(String error) {
                 // TODO Handle error
             }
-        });
+        });*/
+
+        if (restaurantApiList.isEmpty()) {
+            return;
+        }
+        Log.i("LISTE INITIALE", String.valueOf(restaurants));
+        List<Restaurant> restaurantFiltered = new ArrayList<>();
+        for (Restaurant restaurant : restaurantApiList) {
+            if (restaurant.getName().contains(query)) {
+                restaurantFiltered.add(restaurant);
+            }
+        }
+        Log.i("RESTAURANT FILTRE", String.valueOf(restaurantFiltered));
+        restaurantsLiveData.setValue(restaurantFiltered);
     }
 
     private void loadRestaurants(double longitude, double latitude) {
         mRestaurantRepository.getRestaurants(longitude, latitude, new RestaurantRepositoryImpl.RestaurantQuery() {
             @Override
             public void restaurantApiResult(List<Restaurant> restaurants) {
+                restaurantApiList.addAll(restaurants);
                 List<Restaurant> restaurantListUpdate = new ArrayList<>();
                 restaurantListUpdate.addAll(restaurants);
 

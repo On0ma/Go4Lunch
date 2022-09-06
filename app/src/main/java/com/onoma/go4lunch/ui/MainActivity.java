@@ -55,7 +55,9 @@ import com.onoma.go4lunch.ui.utils.StateData;
 import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -81,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private double latitude;
 
     private Restaurant currentRestaurant;
+    private List<Restaurant> restaurantList = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -99,13 +102,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         Log.i("LATITUDE BEFORE ASYNC", String.valueOf(latitude));
 
         // Put Location in bundle
-        Bundle bundle = new Bundle();
+        /*Bundle bundle = new Bundle();
         bundle.putDouble("longitude", LONGITUDE);
         bundle.putDouble("latitude", LATITUDE);
 
         // Set Default Fragment
         currentFragment = new MapFragment();
-        handleFragmentLoading(currentFragment, bundle);
+        handleFragmentLoading(currentFragment, bundle);*/
 
         // Bind the navigation header
         headerView = binding.drawerNavigation.getHeaderView(0);
@@ -115,11 +118,24 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         mRestaurantsViewModel = new ViewModelProvider(this).get(RestaurantsViewModel.class);
 
         handleDrawerNav();
-        handleBottomNav(bundle);
+        /*handleBottomNav(bundle);*/
         // Set a different tab by default on launch
         // binding.bottomNavigation.setSelectedItemId(R.id.nav_list);
 
+        createNotificationChannel();
+
         mUserViewModel.initUserSelection();
+
+        /*final Observer<List<Restaurant>> restaurantListObserver = new Observer<List<Restaurant>>() {
+            @Override
+            public void onChanged(List<Restaurant> restaurants) {
+                if (!restaurantList.isEmpty()) {
+                    restaurantList.clear();
+                }
+                restaurantList.addAll(restaurants);
+            }
+        };
+        mRestaurantsViewModel.getRestaurants(longitude, latitude).observe(this, restaurantListObserver);*/
 
         final Observer<StateData<User>> userObserver = new Observer<StateData<User>>() {
             @Override
@@ -181,8 +197,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             }
         };
         mUserViewModel.getUsersFromRestaurant().observe(this, usersFromRestaurantObserver);
-
-        createNotificationChannel();
     }
 
     @Override
@@ -214,7 +228,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             @Override
             public boolean onQueryTextChange(String s) {
                 Log.i("RECHERCHE", s);
-                mRestaurantsViewModel.getRestaurantsFromSearch(s);
+                List<Restaurant> restaurants = new ArrayList<>();
+                restaurants.addAll(Objects.requireNonNull(mRestaurantsViewModel.initRestaurants().getValue()));
+                mRestaurantsViewModel.getRestaurantsFromSearch(s, restaurants);
                 return false;
             }
         });
@@ -380,6 +396,16 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                             latitude = location.getLatitude();
                             Log.i("LONGITUDE AFTER ASYNC", String.valueOf(longitude));
                             Log.i("LATITUDE AFTER ASYNC", String.valueOf(latitude));
+                            // Put Location in bundle
+                            Bundle bundle = new Bundle();
+                            bundle.putDouble("longitude", longitude);
+                            bundle.putDouble("latitude", latitude);
+
+                            // Set Default Fragment
+                            currentFragment = new MapFragment();
+                            handleFragmentLoading(currentFragment, bundle);
+
+                            handleBottomNav(bundle);
                         }
                     }
                 });
