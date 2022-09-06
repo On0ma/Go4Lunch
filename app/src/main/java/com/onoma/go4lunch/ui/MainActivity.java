@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         Log.i("RESTAURANT ACTUEL", String.valueOf(currentRestaurant));
                         break;
                     case ERROR:
-                        Toast.makeText(getApplicationContext(), stringStateData.getError(), Toast.LENGTH_SHORT).show();
+                        // TODO Handle error;
                 }
             }
         };
@@ -296,8 +296,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     // Show Selected Lunch activity
     private void displayLunch() {
-        Log.i(null, "LUNCH");
-        mUserViewModel.initUserSelection();
+        if (currentRestaurant != null) {
+            Intent intent = new Intent(getApplicationContext(), RestaurantActivity.class);
+            intent.putExtra("restaurant", currentRestaurant);
+            startActivity(intent);
+        } else {
+            Toast.makeText(getApplicationContext(), "No restaurant selected", Toast.LENGTH_SHORT).show();
+        }
+        // mUserViewModel.initUserSelection();
     }
 
     // Show settings activity
