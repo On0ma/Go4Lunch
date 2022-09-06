@@ -29,8 +29,8 @@ public class UserViewModel extends ViewModel {
     private MutableLiveData<UserRepositoryImpl.RestaurantSelectionResult> restaurantSelectionLiveData = new MutableLiveData<>();
     private StateLiveData<Restaurant> currentUserChoice = new StateLiveData<>();
 
-    public UserViewModel() {
-        mUserRepository = UserRepositoryImpl.getInstance();
+    public UserViewModel(UserRepositoryImpl userRepository) {
+        mUserRepository = userRepository;
     }
 
     private Boolean getUserLoggedIn() {

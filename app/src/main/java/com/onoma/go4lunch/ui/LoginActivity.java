@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // startSignInActivity();
 
-        mUserViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        mUserViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(UserViewModel.class);
 
         List<AuthUI.IdpConfig> providers =
                 Arrays.asList(

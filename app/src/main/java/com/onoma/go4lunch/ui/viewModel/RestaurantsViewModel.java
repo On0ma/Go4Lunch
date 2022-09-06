@@ -32,8 +32,8 @@ public class RestaurantsViewModel extends ViewModel {
 
     private List<Restaurant> restaurantApiList = new ArrayList<>();
 
-    public RestaurantsViewModel() {
-        mRestaurantRepository = RestaurantRepositoryImpl.getInstance();
+    public RestaurantsViewModel(RestaurantRepositoryImpl restaurantRepository) {
+        mRestaurantRepository = restaurantRepository;
     }
 
     public LiveData<List<Restaurant>> initRestaurants() {

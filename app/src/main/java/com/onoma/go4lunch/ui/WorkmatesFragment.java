@@ -34,7 +34,7 @@ public class WorkmatesFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        mUserViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+        mUserViewModel = new ViewModelProvider(requireActivity(), ViewModelFactory.getInstance()).get(UserViewModel.class);
 
         RecyclerView recyclerView = binding.fragmentWorkmatesRecyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

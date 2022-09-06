@@ -57,7 +57,7 @@ public class MapFragment extends Fragment {
         double latitude = getArguments().getDouble("latitude");
         Log.i("longitude", String.valueOf(longitude));
 
-        mRestaurantsViewModel = new ViewModelProvider(requireActivity()).get(RestaurantsViewModel.class);
+        mRestaurantsViewModel = new ViewModelProvider(requireActivity(), ViewModelFactory.getInstance()).get(RestaurantsViewModel.class);
         mapview = binding.mapView;
 
         final Observer<List<Restaurant>> restaurantListObserver = new Observer<List<Restaurant>>() {

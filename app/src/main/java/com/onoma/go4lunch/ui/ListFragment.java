@@ -44,8 +44,8 @@ public class ListFragment extends Fragment implements RestaurantAdapter.Restaura
         RestaurantAdapter adapter = new RestaurantAdapter(longitude, latitude, this);
         recyclerView.setAdapter(adapter);
 
-        mRestaurantsViewModel = new ViewModelProvider(requireActivity()).get(RestaurantsViewModel.class);
-        mUserViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+        mUserViewModel = new ViewModelProvider(requireActivity(), ViewModelFactory.getInstance()).get(UserViewModel.class);
+        mRestaurantsViewModel = new ViewModelProvider(requireActivity(), ViewModelFactory.getInstance()).get(RestaurantsViewModel.class);
 
         mRestaurantsViewModel.getRestaurants(longitude, latitude).observe(getViewLifecycleOwner(), new Observer<List<Restaurant>>() {
             @Override

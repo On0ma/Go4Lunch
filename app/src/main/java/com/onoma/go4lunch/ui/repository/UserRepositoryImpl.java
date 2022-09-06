@@ -37,7 +37,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    private UserRepositoryImpl() { }
+    public UserRepositoryImpl() { }
 
     public static UserRepositoryImpl getInstance() {
         UserRepositoryImpl result = instance;
@@ -67,7 +67,7 @@ public class UserRepositoryImpl implements UserRepository {
             User userToCreate = new User(uid, username, email, urlPicture);
 
             getUsersCollection().document(uid).get().addOnSuccessListener(documentSnapshot -> {
-                this.getUsersCollection().document(uid).set(userToCreate);
+                this.getUsersCollection().document(uid).set(userToCreate, SetOptions.merge());
             });
         }
     }

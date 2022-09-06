@@ -45,8 +45,8 @@ public class RestaurantActivity extends AppCompatActivity {
 
         init();
 
-        mUserViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        mRestaurantsViewModel = new ViewModelProvider(this).get(RestaurantsViewModel.class);
+        mUserViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(UserViewModel.class);
+        mRestaurantsViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(RestaurantsViewModel.class);
 
         Restaurant restaurant = (Restaurant) getIntent().getSerializableExtra("restaurant");
 

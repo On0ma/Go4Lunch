@@ -118,8 +118,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         headerView = binding.drawerNavigation.getHeaderView(0);
         headerBinding = HeaderNavigationDrawerBinding.bind(headerView);
 
-        mUserViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        mRestaurantsViewModel = new ViewModelProvider(this).get(RestaurantsViewModel.class);
+//        mUserViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+//        mRestaurantsViewModel = new ViewModelProvider(this).get(RestaurantsViewModel.class);
+        mUserViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(UserViewModel.class);
+        mRestaurantsViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(RestaurantsViewModel.class);
 
         handleDrawerNav();
         /*handleBottomNav(bundle);*/
