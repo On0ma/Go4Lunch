@@ -2,9 +2,12 @@ package com.onoma.go4lunch.ui;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -56,6 +59,7 @@ import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -239,19 +243,22 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void setNotification(Restaurant restaurant, String names) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, DEFAULT_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_baseline_local_dining_24)
-                .setContentTitle(getString(R.string.notification_content_title))
-                .setContentText(getString(R.string.notification_content_description, restaurant.getName(), restaurant.getAdress(), names))
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(getString(R.string.notification_content_description, restaurant.getName(), restaurant.getAdress(), names)))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        Intent alarmShowIntent = new Intent(this, BroadcastManager.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("names", names);
+        bundle.putSerializable("restaurant", restaurant);
+        alarmShowIntent.putExtra("bundle", bundle);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 110, alarmShowIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        // Remove 2 hours from current time to get to UTC
+        calendar.set(Calendar.HOUR_OF_DAY, 10);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
 
-        // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(100, builder.build());
-
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     private void createNotificationChannel() {
