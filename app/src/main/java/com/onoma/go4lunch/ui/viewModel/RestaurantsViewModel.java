@@ -12,6 +12,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.onoma.go4lunch.model.Restaurant;
+import com.onoma.go4lunch.ui.repository.RestaurantRepository;
 import com.onoma.go4lunch.ui.repository.RestaurantRepositoryImpl;
 import com.onoma.go4lunch.ui.utils.StateData;
 import com.onoma.go4lunch.ui.utils.StateLiveData;
@@ -39,6 +40,20 @@ public class RestaurantsViewModel extends ViewModel {
             loadRestaurants(longitude, latitude);
         }
         return  restaurantsLiveData;
+    }
+
+    public void getRestaurantsFromSearch(String query) {
+        mRestaurantRepository.getRestaurantsFromQuery(query, new RestaurantRepository.RestaurantQuery() {
+            @Override
+            public void restaurantApiResult(List<Restaurant> restaurants) {
+                restaurantsLiveData.setValue(restaurants);
+            }
+
+            @Override
+            public void restaurantApiFailure(String error) {
+                // TODO Handle error
+            }
+        });
     }
 
     private void loadRestaurants(double longitude, double latitude) {

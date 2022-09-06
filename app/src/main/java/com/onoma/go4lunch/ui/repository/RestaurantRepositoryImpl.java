@@ -1,5 +1,7 @@
 package com.onoma.go4lunch.ui.repository;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -116,6 +118,38 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
             @Override
             public void onFailure(Call<RestaurantResponse> call, Throwable t) {
                 callback.restaurantApiFailure("Error getting restaurant data");
+            }
+        });
+    }
+
+    public void getRestaurantsFromQuery(String query, RestaurantQuery callback) {
+        db.collection("restaurants").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    List<Restaurant> restaurantFiltered = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if (document.getString("name").contains(query)) {
+                            int nbSelection = document.getDouble("nbSelection") != null ? document.getDouble("nbSelection").intValue() : 0;
+                            int nbFavorite = document.getDouble("nbFavorite") != null ? document.getDouble("nbFavorite").intValue() : 0;
+                            Restaurant item = new Restaurant(
+                                    document.getString("id"),
+                                    document.getString("name"),
+                                    document.getString("adress"),
+                                    document.getString("type"),
+                                    document.getDouble("longitude"),
+                                    document.getDouble("latitude"),
+                                    nbSelection,
+                                    nbFavorite
+                            );
+                            restaurantFiltered.add(item);
+                        }
+                    }
+                    Log.i("RESTAURANT FILTERED", String.valueOf(restaurantFiltered));
+                    callback.restaurantApiResult(restaurantFiltered);
+                } else {
+                    callback.restaurantApiFailure("Error getting documents");
+                }
             }
         });
     }

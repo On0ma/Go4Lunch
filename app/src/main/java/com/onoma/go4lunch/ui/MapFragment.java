@@ -92,6 +92,7 @@ public class MapFragment extends Fragment {
         Bitmap iconSelected = drawableToBitmap(AppCompatResources.getDrawable(getContext(), R.drawable.location_pin_selected));
         AnnotationPlugin annotationApi = AnnotationPluginImplKt.getAnnotations(mapview);
         PointAnnotationManager pointAnnotationManager = PointAnnotationManagerKt.createPointAnnotationManager(annotationApi, new AnnotationConfig());
+        pointAnnotationManager.deleteAll();
         List<Double> textOffset = new ArrayList<>();
         textOffset.add(0.00);
         textOffset.add(1.00);

@@ -32,6 +32,8 @@ public class WorkmatesFragment extends Fragment {
         binding = FragmentWorkmatesBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        setHasOptionsMenu(true);
+
         mUserViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
 
         RecyclerView recyclerView = binding.fragmentWorkmatesRecyclerView;

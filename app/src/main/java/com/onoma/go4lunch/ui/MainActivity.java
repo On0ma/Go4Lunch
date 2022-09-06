@@ -19,15 +19,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.SearchView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -54,6 +52,7 @@ import com.onoma.go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.model.User;
 import com.onoma.go4lunch.ui.utils.StateData;
+import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
 import java.util.List;
@@ -64,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     int PERMISSION_ID = 44;
 
     private UserViewModel mUserViewModel;
+    private RestaurantsViewModel mRestaurantsViewModel;
 
     Fragment currentFragment;
     FragmentTransaction ft;
@@ -89,6 +89,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         View view = binding.getRoot();
         setContentView(view);
 
+        Toolbar toolbar = (Toolbar) binding.topAppBar;
+        setSupportActionBar(toolbar);
+
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         getLastLocation();
@@ -109,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         headerBinding = HeaderNavigationDrawerBinding.bind(headerView);
 
         mUserViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        mRestaurantsViewModel = new ViewModelProvider(this).get(RestaurantsViewModel.class);
 
         handleDrawerNav();
         handleBottomNav(bundle);
@@ -185,15 +189,35 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.nav_menu, menu);
+        super.onCreateOptionsMenu(menu);
 
-        final String[] COUNTRIES = new String[] {
-                "Belgium", "France", "Italy", "Germany", "Spain"
-        };
+        Log.i("TEST", "menu");
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, COUNTRIES);
-        AutoCompleteTextView textView = (AutoCompleteTextView) menu.findItem(R.id.nav_search);
-        textView.setAdapter(adapter);
+        SearchView searchView = (SearchView) menu.findItem(R.id.nav_search).getActionView();
+        searchView.setQueryHint("Type here to search");
+
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!b) {
+                    searchView.clearFocus();
+                }
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                Log.i("RECHERCHE", s);
+                mRestaurantsViewModel.getRestaurantsFromSearch(s);
+                return false;
+            }
+        });
 
         return true;
     }
