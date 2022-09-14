@@ -1,10 +1,8 @@
 package com.onoma.go4lunch.ui.viewModel;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.lifecycle.MutableLiveData;
 
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.model.User;
@@ -24,7 +22,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -80,7 +77,7 @@ public class UserViewModelTest extends TestCase {
             }
         }).when(userRepository).getUserData(any());
 
-        StateData userData = userViewModel.getUserData().getValue();
+        StateData<User> userData = userViewModel.getUserData().getValue();
         assertEquals(userData.getStatus(), StateData.DataStatus.SUCCESS);
         assertEquals(userData.getData(), FAKE_USER);
         assertNull(userData.getError());
@@ -98,7 +95,7 @@ public class UserViewModelTest extends TestCase {
             }
         }).when(userRepository).getUserData(any());
 
-        StateData userData = userViewModel.getUserData().getValue();
+        StateData<User> userData = userViewModel.getUserData().getValue();
         assertEquals(userData.getStatus(), StateData.DataStatus.ERROR);
         assertNull(userData.getData());
         assertEquals(userData.getError(), ERROR_MESSAGE);
@@ -123,7 +120,7 @@ public class UserViewModelTest extends TestCase {
             }
         }).when(userRepository).getAllUsers(any());
 
-        StateData userListData = userViewModel.getAllUsers().getValue();
+        StateData<List<User>> userListData = userViewModel.getAllUsers().getValue();
         assertEquals(userListData.getStatus(), StateData.DataStatus.SUCCESS);
         assertEquals(userListData.getData(), FAKE_USERS_LIST);
         assertNull(userListData.getError());
@@ -141,7 +138,7 @@ public class UserViewModelTest extends TestCase {
             }
         }).when(userRepository).getAllUsers(any());
 
-        StateData userListData = userViewModel.getAllUsers().getValue();
+        StateData<List<User>> userListData = userViewModel.getAllUsers().getValue();
         assertEquals(userListData.getStatus(), StateData.DataStatus.ERROR);
         assertNull(userListData.getData());
         assertEquals(userListData.getError(), ERROR_MESSAGE);
@@ -160,7 +157,7 @@ public class UserViewModelTest extends TestCase {
         }).when(userRepository).getAllUsersFromRestaurant(any(), any());
 
         userViewModel.initUsersFromRestaurant(FAKE_RESTAURANT);
-        StateData userListData = userViewModel.getUsersFromRestaurant().getValue();
+        StateData<List<User>> userListData = userViewModel.getUsersFromRestaurant().getValue();
         assertEquals(userListData.getStatus(), StateData.DataStatus.SUCCESS);
         assertEquals(userListData.getData(), FAKE_USERS_LIST);
         assertNull(userListData.getError());
@@ -179,7 +176,7 @@ public class UserViewModelTest extends TestCase {
         }).when(userRepository).getAllUsersFromRestaurant(any(), any());
 
         userViewModel.initUsersFromRestaurant(FAKE_RESTAURANT);
-        StateData userListData = userViewModel.getUsersFromRestaurant().getValue();
+        StateData<List<User>> userListData = userViewModel.getUsersFromRestaurant().getValue();
         assertEquals(userListData.getStatus(), StateData.DataStatus.ERROR);
         assertNull(userListData.getData());
         assertEquals(userListData.getError(), ERROR_MESSAGE);
@@ -198,7 +195,7 @@ public class UserViewModelTest extends TestCase {
         }).when(userRepository).getCurrentUserSelection(any());
 
         userViewModel.initUserSelection();
-        StateData userListData = userViewModel.getUserSelection().getValue();
+        StateData<Restaurant> userListData = userViewModel.getUserSelection().getValue();
         assertEquals(userListData.getStatus(), StateData.DataStatus.SUCCESS);
         assertEquals(userListData.getData(), FAKE_RESTAURANT);
         assertNull(userListData.getError());
@@ -217,7 +214,7 @@ public class UserViewModelTest extends TestCase {
         }).when(userRepository).getCurrentUserSelection(any());
 
         userViewModel.initUserSelection();
-        StateData userListData = userViewModel.getUserSelection().getValue();
+        StateData<Restaurant> userListData = userViewModel.getUserSelection().getValue();
         assertEquals(userListData.getStatus(), StateData.DataStatus.ERROR);
         assertNull(userListData.getData());
         assertEquals(userListData.getError(), ERROR_MESSAGE);

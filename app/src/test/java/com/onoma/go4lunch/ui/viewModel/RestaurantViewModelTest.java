@@ -8,8 +8,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.ui.repository.RestaurantRepository;
 import com.onoma.go4lunch.ui.repository.RestaurantRepositoryImpl;
-import com.onoma.go4lunch.ui.repository.UserRepository;
-import com.onoma.go4lunch.ui.repository.UserRepositoryImpl;
 import com.onoma.go4lunch.ui.utils.StateData;
 
 import junit.framework.TestCase;
@@ -68,8 +66,7 @@ public class RestaurantViewModelTest extends TestCase {
         restaurantViewModel = new RestaurantsViewModel(restaurantRepository);
     }
 
-    // TODO Cannot complete test because of Firebase call inside Restaurant View Model
-    /*@Test
+    @Test
     public void getRestaurants_ShouldCallOnSuccess() {
         Mockito.doAnswer(new Answer() {
             @Override
@@ -82,7 +79,28 @@ public class RestaurantViewModelTest extends TestCase {
         }).when(restaurantRepository).getRestaurants(anyDouble(), anyDouble(), any());
 
         restaurantViewModel.initRestaurants();
-        List<Restaurant> restaurantList = restaurantViewModel.getRestaurants(FAKE_LONGITUDE, FAKE_LATITUDE).getValue();
-        assertEquals(restaurantList, FAKE_RESTAURANT_LIST);
-    }*/
+        StateData<List<Restaurant>> restaurantListData = restaurantViewModel.getRestaurants(FAKE_LONGITUDE, FAKE_LATITUDE).getValue();
+        assertEquals(restaurantListData.getStatus(), StateData.DataStatus.SUCCESS);
+        assertEquals(restaurantListData.getData(), FAKE_RESTAURANT_LIST);
+        assertNull(restaurantListData.getError());
+    }
+
+    @Test
+    public void getRestaurants_ShouldCallOnFailure() {
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                RestaurantRepository.RestaurantQuery callback = (RestaurantRepository.RestaurantQuery) args[2];
+                callback.restaurantApiFailure(ERROR_MESSAGE);
+                return null;
+            }
+        }).when(restaurantRepository).getRestaurants(anyDouble(), anyDouble(), any());
+
+        restaurantViewModel.initRestaurants();
+        StateData<List<Restaurant>> restaurantListData = restaurantViewModel.getRestaurants(FAKE_LONGITUDE, FAKE_LATITUDE).getValue();
+        assertEquals(restaurantListData.getStatus(), StateData.DataStatus.ERROR);
+        assertNull(restaurantListData.getData());
+        assertEquals(restaurantListData.getError(), ERROR_MESSAGE);
+    }
 }
