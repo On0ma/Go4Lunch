@@ -1,11 +1,13 @@
 package com.onoma.go4lunch.ui.viewModel;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.model.User;
+import com.onoma.go4lunch.ui.repository.RestaurantRepository;
 import com.onoma.go4lunch.ui.repository.UserRepository;
 import com.onoma.go4lunch.ui.repository.UserRepositoryImpl;
 import com.onoma.go4lunch.ui.utils.StateData;
@@ -218,5 +220,39 @@ public class UserViewModelTest extends TestCase {
         assertEquals(userListData.getStatus(), StateData.DataStatus.ERROR);
         assertNull(userListData.getData());
         assertEquals(userListData.getError(), ERROR_MESSAGE);
+    }
+
+    @Test
+    public void deleteRestaurantFromUserSelection() {
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                UserRepository.RestaurantSelectionQuery callback = (UserRepository.RestaurantSelectionQuery) args[2];
+                callback.getRestaurantSelection(UserRepository.RestaurantSelectionResult.DELETE);
+                return null;
+            }
+        }).when(userRepository).updateRestaurantSelection(any(),eq(true), any());
+
+        userViewModel.initRestaurantSelection(FAKE_RESTAURANT, true);
+        UserRepository.RestaurantSelectionResult restaurantSelectionResult = userViewModel.getRestaurantSelection().getValue();
+        assertEquals(restaurantSelectionResult, UserRepository.RestaurantSelectionResult.DELETE);
+    }
+
+    @Test
+    public void addRestaurantFromUserSelection() {
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                UserRepository.RestaurantSelectionQuery callback = (UserRepository.RestaurantSelectionQuery) args[2];
+                callback.getRestaurantSelection(UserRepository.RestaurantSelectionResult.ADD);
+                return null;
+            }
+        }).when(userRepository).updateRestaurantSelection(any(),eq(true), any());
+
+        userViewModel.initRestaurantSelection(FAKE_RESTAURANT, true);
+        UserRepository.RestaurantSelectionResult restaurantSelectionResult = userViewModel.getRestaurantSelection().getValue();
+        assertEquals(restaurantSelectionResult, UserRepository.RestaurantSelectionResult.ADD);
     }
 }

@@ -2,8 +2,10 @@ package com.onoma.go4lunch.ui.viewModel;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.eq;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.lifecycle.LiveData;
 
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.ui.repository.RestaurantRepository;
@@ -102,5 +104,39 @@ public class RestaurantViewModelTest extends TestCase {
         assertEquals(restaurantListData.getStatus(), StateData.DataStatus.ERROR);
         assertNull(restaurantListData.getData());
         assertEquals(restaurantListData.getError(), ERROR_MESSAGE);
+    }
+
+    @Test
+    public void deleteRestaurantFromUserFavorite() {
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                RestaurantRepository.RestaurantFavoriteQuery callback = (RestaurantRepository.RestaurantFavoriteQuery) args[2];
+                callback.getRestaurantFavorite(RestaurantRepository.RestaurantFavoriteResult.DELETE);
+                return null;
+            }
+        }).when(restaurantRepository).updateRestaurantFavorite(any(),eq(true), any());
+
+        restaurantViewModel.initRestaurantFavorite(FAKE_RESTAURANT, true);
+        RestaurantRepository.RestaurantFavoriteResult restaurantFavoriteResultLiveData = restaurantViewModel.getRestaurantFavorite().getValue();
+        assertEquals(restaurantFavoriteResultLiveData, RestaurantRepository.RestaurantFavoriteResult.DELETE);
+    }
+
+    @Test
+    public void addRestaurantFromUserFavorite() {
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                RestaurantRepository.RestaurantFavoriteQuery callback = (RestaurantRepository.RestaurantFavoriteQuery) args[2];
+                callback.getRestaurantFavorite(RestaurantRepository.RestaurantFavoriteResult.ADD);
+                return null;
+            }
+        }).when(restaurantRepository).updateRestaurantFavorite(any(),eq(true), any());
+
+        restaurantViewModel.initRestaurantFavorite(FAKE_RESTAURANT, true);
+        RestaurantRepository.RestaurantFavoriteResult restaurantFavoriteResultLiveData = restaurantViewModel.getRestaurantFavorite().getValue();
+        assertEquals(restaurantFavoriteResultLiveData, RestaurantRepository.RestaurantFavoriteResult.ADD);
     }
 }
