@@ -12,22 +12,11 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-
-        <item name="colorControlNormal">@color/white</item>
-        <item name="popupMenuStyle">@style/SubmenuHeaderStyle</item>
-        <item name="popupTheme">@style/SubmenuHeaderStyle</item>
-    </style>
-
-    <style name="SubmenuHeaderStyle">
-        <item name="android:colorBackground">@color/white</item>
-        <item name="android:popupBackground">@color/white</item>
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryVariant">@color/accent_darker</item>
     </style>
 
     <style name="MyToolBarTheme" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="android:tint">@color/white</item>
-        <item name="android:background">@color/accent</item>
+        <!--<item name="android:background">@color/accent</item>-->
     </style>
 
 </resources>
