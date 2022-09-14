@@ -127,9 +127,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     case SUCCESS:
                         mUserViewModel.initUsersFromRestaurant(stringStateData.getData());
                         currentRestaurant = stringStateData.getData();
-                        Log.i("CURRENT RESTAURANT", currentRestaurant.toString());
                         break;
                     case ERROR:
+                        currentRestaurant = null;
                         Log.e("Error user selection", stringStateData.getError());
                 }
             }
@@ -177,12 +177,18 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 110, alarmShowIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Calendar calendar = Calendar.getInstance();
+        long currentTime = calendar.getTimeInMillis();
         calendar.setTimeInMillis(System.currentTimeMillis());
         // Remove 2 hours from current time to get to UTC
         calendar.set(Calendar.HOUR_OF_DAY, 10);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
-
+        long notificationTime = calendar.getTimeInMillis();
+        // Add a day to the notification if you launched the app after 12 PM
+        if (notificationTime-currentTime < 0) {
+            Log.i("ALARM", "alarm is set fot next day");
+            calendar.add(Calendar.DATE, 1);
+        }
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
