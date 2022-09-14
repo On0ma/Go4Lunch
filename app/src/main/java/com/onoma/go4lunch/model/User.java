@@ -64,7 +64,6 @@ public class User {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", photoUrl='" + photoUrl + '\'' +
-                ", restaurantId='" + restaurantId + '\'' +
                 '}';
     }
 

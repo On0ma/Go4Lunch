@@ -8,6 +8,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -165,9 +166,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public void onResume() {
         super.onResume();
         mUserViewModel.initUserSelection();
+        binding.drawerLayout.close();
     }
 
     private void setNotification(Restaurant restaurant, String names) {
+        Context context = getApplicationContext();
+        SharedPreferences sharedPreferences = context.getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
+        boolean notificationChoice = sharedPreferences.getBoolean(getString(R.string.notifcations_choice_key), true);
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         Intent alarmShowIntent = new Intent(this, BroadcastManager.class);
         Bundle bundle = new Bundle();
@@ -175,21 +180,24 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         bundle.putSerializable("restaurant", restaurant);
         alarmShowIntent.putExtra("bundle", bundle);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 110, alarmShowIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Calendar calendar = Calendar.getInstance();
-        long currentTime = calendar.getTimeInMillis();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        // Remove 2 hours from current time to get to UTC
-        calendar.set(Calendar.HOUR_OF_DAY, 10);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        long notificationTime = calendar.getTimeInMillis();
-        // Add a day to the notification if you launched the app after 12 PM
-        if (notificationTime-currentTime < 0) {
-            Log.i("ALARM", "alarm is set fot next day");
-            calendar.add(Calendar.DATE, 1);
+        if (!notificationChoice) {
+            alarmManager.cancel(pendingIntent);
+        } else {
+            Calendar calendar = Calendar.getInstance();
+            long currentTime = calendar.getTimeInMillis();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            // Remove 2 hours from current time to get to UTC
+            calendar.set(Calendar.HOUR_OF_DAY, 10);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            long notificationTime = calendar.getTimeInMillis();
+            // Add a day to the notification if you launched the app after 12 PM
+            if (notificationTime-currentTime < 0) {
+                Log.i("ALARM", "alarm is set fot next day");
+                calendar.add(Calendar.DATE, 1);
+            }
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         }
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     private void createNotificationChannel() {

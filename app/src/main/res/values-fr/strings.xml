@@ -47,4 +47,5 @@
     <string name="setting_delete_popup_title">Êtes-vous sûr?</string>
     <string name="setting_delete_popup">Êtes-vous sûr? Vous allez perdre l\'accès à votre compte</string>
     <string name="settings_delete_confirm">Supprimer</string>
+    <string name="settings_notification_title">Activer les notifications</string>
 </resources>

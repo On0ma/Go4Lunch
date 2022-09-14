@@ -52,4 +52,8 @@
     <string name="setting_delete_popup_title">Are you sure?</string>
     <string name="setting_delete_popup">Are you sure? You will lose access to your account</string>
     <string name="settings_delete_confirm">Delete account</string>
+    <string name="settings_notification_title">Activate notifications</string>
+
+    <string name="preference_file_key" translatable="false">user preferences file</string>
+    <string name="notifcations_choice_key" translatable="false">Notification choice</string>
 </resources>
