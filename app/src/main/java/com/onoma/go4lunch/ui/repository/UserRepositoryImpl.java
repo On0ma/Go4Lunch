@@ -1,7 +1,6 @@
 package com.onoma.go4lunch.ui.repository;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -117,7 +116,6 @@ public class UserRepositoryImpl implements UserRepository {
                         } else {
                             newUser.setRestaurantId("");
                         }
-                        Log.i("USER INFO", String.valueOf(newUser));
                         userList.add(newUser);
                     }
                     callback.getAllUsersSuccess(userList);

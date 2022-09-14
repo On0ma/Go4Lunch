@@ -74,12 +74,11 @@ public class ListFragment extends Fragment implements RestaurantAdapter.Restaura
             public void onChanged(StateData<List<Restaurant>> listStateData) {
                 switch (listStateData.getStatus()) {
                     case SUCCESS:
-                        Log.i("CHANGEd", String.valueOf(listStateData.getData()));
                         List<Restaurant> newList = new ArrayList<>();
                         newList.addAll(listStateData.getData());
-                        // TODO Trouver une meilleur solution
-                        // adapter.submitList(null);
-                        Log.i("NEW LIST: ", String.valueOf(newList));
+                        // TODO Find a better solution
+                        // Temporary solution to fix the bug where the recycler view doesn't update while giving an identical list
+                        adapter.submitList(null);
                         adapter.submitList(newList);
                         break;
                     case ERROR:

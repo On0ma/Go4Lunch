@@ -16,17 +16,13 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -50,14 +46,13 @@ import com.onoma.go4lunch.databinding.ActivityMainBinding;
 import com.onoma.go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.model.User;
+import com.onoma.go4lunch.ui.repository.UserRepository;
 import com.onoma.go4lunch.ui.utils.StateData;
 import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -132,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     case SUCCESS:
                         mUserViewModel.initUsersFromRestaurant(stringStateData.getData());
                         currentRestaurant = stringStateData.getData();
+                        Log.i("CURRENT RESTAURANT", currentRestaurant.toString());
                         break;
                     case ERROR:
                         Log.e("Error user selection", stringStateData.getError());
@@ -163,6 +159,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             }
         };
         mUserViewModel.getUsersFromRestaurant().observe(this, usersFromRestaurantObserver);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mUserViewModel.initUserSelection();
     }
 
     private void setNotification(Restaurant restaurant, String names) {

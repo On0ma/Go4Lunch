@@ -1,16 +1,10 @@
 package com.onoma.go4lunch.ui.viewModel;
 
-import android.util.Log;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.ui.repository.RestaurantRepositoryImpl;
 import com.onoma.go4lunch.ui.utils.StateData;

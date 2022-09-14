@@ -1,7 +1,5 @@
 package com.onoma.go4lunch.ui.repository;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -16,8 +14,6 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.onoma.go4lunch.data.RestaurantApi;
@@ -77,8 +73,6 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
             public void onResponse(Call<RestaurantResponse> call, Response<RestaurantResponse> response) {
                 List<Restaurant> result = new ArrayList<>();
                 WriteBatch batch = db.batch();
-
-                Log.i("API CALL", "New api call");
 
                 for (Feature restaurant : response.body().getFeatures()) {
                     DocumentReference restaurantRef = db.collection("restaurants").document(restaurant.getId());

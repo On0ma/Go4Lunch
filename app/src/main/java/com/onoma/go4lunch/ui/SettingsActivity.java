@@ -49,12 +49,11 @@ public class SettingsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mUserViewModel.deleteUser(getApplicationContext()).addOnSuccessListener(aVoid -> {
-                            Log.i("DELETE SUCCESS", "Account deleted");
                             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                             startActivity(intent);
                             finish();
                         }).addOnFailureListener(aVoid -> {
-                           Log.i("DELETE FAILURE", "Error deleting account");
+                           Log.e("Delete user error:", "Error deleting account");
                         });
                     }
                 })
