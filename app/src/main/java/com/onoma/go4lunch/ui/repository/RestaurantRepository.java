@@ -7,6 +7,7 @@ import java.util.Map;
 
 public interface RestaurantRepository {
     void getRestaurants(double longitude, double latitude, RestaurantQuery callback);
+    void updateRestaurantFavorite(Restaurant restaurant, Boolean update, RestaurantFavoriteQuery callback);
 
     interface RestaurantQuery {
         void restaurantApiResult(List<Restaurant> restaurants);

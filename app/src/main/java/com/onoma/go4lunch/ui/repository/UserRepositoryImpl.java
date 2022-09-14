@@ -1,6 +1,7 @@
 package com.onoma.go4lunch.ui.repository;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,12 +14,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.model.User;
@@ -64,7 +68,11 @@ public class UserRepositoryImpl implements UserRepository {
             String email = user.getEmail();
             String uid = user.getUid();
 
-            User userToCreate = new User(uid, username, email, urlPicture);
+            Map<String, Object> userToCreate = new HashMap<>();
+            userToCreate.put("uid", uid);
+            userToCreate.put("name", username);
+            userToCreate.put("email", email);
+            userToCreate.put("photoUrl", urlPicture);
 
             getUsersCollection().document(uid).get().addOnSuccessListener(documentSnapshot -> {
                 this.getUsersCollection().document(uid).set(userToCreate, SetOptions.merge());

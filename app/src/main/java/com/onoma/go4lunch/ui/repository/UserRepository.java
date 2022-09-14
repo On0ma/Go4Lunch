@@ -10,6 +10,7 @@ public interface UserRepository {
     void getUserData(UserQuery callback);
     void getAllUsers(AllUsersQuery callback);
     void getAllUsersFromRestaurant(Restaurant restaurant, AllUsersQuery callback);
+    void updateRestaurantSelection(Restaurant restaurant, Boolean update, RestaurantSelectionQuery callback);
     void getCurrentUserSelection(UserSelectionQuery callback);
     Boolean getIsUserLoggedIn();
 
