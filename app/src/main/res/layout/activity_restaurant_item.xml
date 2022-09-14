@@ -10,8 +10,7 @@
         android:id="@+id/restaurant_worker_item_image"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:src="@drawable/ic_baseline_person_24"
-        app:tint="@color/black"
+        android:src="@drawable/ic_baseline_person_24_black"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 

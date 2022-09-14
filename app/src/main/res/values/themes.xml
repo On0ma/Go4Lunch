@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.Go4Lunch" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">@color/accent</item>
+        <item name="colorPrimaryVariant">@color/accent_darker</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
@@ -14,5 +14,20 @@
         <!-- Customize your theme here. -->
 
         <item name="colorControlNormal">@color/white</item>
+        <item name="popupMenuStyle">@style/SubmenuHeaderStyle</item>
+        <item name="popupTheme">@style/SubmenuHeaderStyle</item>
     </style>
+
+    <style name="SubmenuHeaderStyle">
+        <item name="android:colorBackground">@color/white</item>
+        <item name="android:popupBackground">@color/white</item>
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryVariant">@color/accent_darker</item>
+    </style>
+
+    <style name="MyToolBarTheme" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:tint">@color/white</item>
+        <item name="android:background">@color/accent</item>
+    </style>
+
 </resources>

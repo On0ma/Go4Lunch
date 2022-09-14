@@ -6,4 +6,21 @@
         android:icon="@drawable/ic_baseline_search_24"
         app:showAsAction="ifRoom|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
+    <item android:id="@+id/nav_sort"
+        android:title="@string/search_hint"
+        android:icon="@drawable/sort"
+        app:showAsAction="ifRoom|collapseActionView">
+        <menu>
+            <item
+                android:id="@+id/menu_sort_newest"
+                android:title="@string/menu_sort_name" />
+            <item
+                android:id="@+id/menu_sort_rating"
+                android:title="@string/menu_sort_rating" />
+            <item
+                android:id="@+id/menu_sort_distance"
+                android:title="@string/menu_sort_distance" />
+        </menu>
+    </item>
+
 </menu>

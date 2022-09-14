@@ -24,8 +24,8 @@
                 android:id="@+id/topAppBar"
                 style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"
                 android:layout_width="match_parent"
+                android:theme="@style/MyToolBarTheme"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@android:color/transparent"
                 android:elevation="0dp"
                 app:menu="@menu/nav_menu"
                 app:navigationIcon="@drawable/ic_baseline_menu_24"
@@ -42,6 +42,7 @@
                 android:id="@+id/bottom_navigation"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                app:itemTextColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -65,6 +66,9 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         app:menu="@menu/navigation_drawer"
+        android:background="@color/accent_lighter"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/white"
         app:headerLayout="@layout/header_navigation_drawer"
         android:layout_gravity="start" />
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -29,4 +29,22 @@
     <string name="default_notification_channel_description">Crée un rappel tous les jours à midi avec le restaurant que vous avez séléctionné et tous les collègues qui l\'ont aussi choisi</string>
     <string name="notification_content_title">Rappel du repas</string>
     <string name="notification_content_description">Repas prévu à %1$s, %2$s avec %3$s</string>
+
+    <string name="workmates_choice">%1$s mange à %2$s</string>
+    <string name="workmates_no_choice">%1$s n\'a pas encore choisi</string>
+    <string name="workmates_restaurant">%1$s a choisi ce restaurant!</string>
+
+    <string name="menu_search_hint">Chercher par nom de restaurant</string>
+    <string name="menu_sort_name">Trier par nom</string>
+    <string name="menu_sort_rating">Trier par note</string>
+    <string name="menu_sort_distance">Trier par distance</string>
+
+    <string name="settings_action_bar_title">Paramètres</string>
+    <string name="settings_cancel">Annuler</string>
+    <string name="settings_delete_title">Supprimer votre compte</string>
+    <string name="settings_delete_description">Vous perdrez l\'accès à votre compte utilisateur</string>
+    <string name="settings_delete_button">Supprimer le compte</string>
+    <string name="setting_delete_popup_title">Êtes-vous sûr?</string>
+    <string name="setting_delete_popup">Êtes-vous sûr? Vous allez perdre l\'accès à votre compte</string>
+    <string name="settings_delete_confirm">Supprimer</string>
 </resources>

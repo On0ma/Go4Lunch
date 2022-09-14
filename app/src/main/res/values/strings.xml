@@ -34,4 +34,22 @@
     <string name="default_notification_channel_description">Set a reminder every day at noon with the restaurant you selected and every workmates who selected it</string>
     <string name="notification_content_title">Lunch reminder</string>
     <string name="notification_content_description">Lunch planned at %1$s, %2$s with %3$s</string>
+
+    <string name="workmates_choice">%1$s is eating at %2$s</string>
+    <string name="workmates_no_choice">%1$s hasn\'t decided yet</string>
+    <string name="workmates_restaurant">%1$s is joining!</string>
+
+    <string name="menu_search_hint">Search by restaurant name</string>
+    <string name="menu_sort_name">Sort by name</string>
+    <string name="menu_sort_rating">Sort by rating</string>
+    <string name="menu_sort_distance">Sort by distance</string>
+
+    <string name="settings_action_bar_title">Settings</string>
+    <string name="settings_cancel">Cancel</string>
+    <string name="settings_delete_title">Delete your account</string>
+    <string name="settings_delete_description">You will permanently lose access to your account</string>
+    <string name="settings_delete_button">Delete account</string>
+    <string name="setting_delete_popup_title">Are you sure?</string>
+    <string name="setting_delete_popup">Are you sure? You will lose access to your account</string>
+    <string name="settings_delete_confirm">Delete account</string>
 </resources>

@@ -12,8 +12,7 @@
         android:layout_height="48dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/ic_baseline_person_24"
-        app:tint="@color/black" />
+        android:src="@drawable/ic_baseline_person_24_black" />
 
     <TextView
         android:id="@+id/workmate_restaurant"
@@ -23,7 +22,17 @@
         app:layout_constraintBottom_toBottomOf="@id/workmate_picture"
         app:layout_constraintStart_toEndOf="@id/workmate_picture"
         android:layout_marginStart="16dp"
-        android:textSize="16sp"
+        android:textSize="14sp"
         tools:text="Pierre Martin is eating at this restaurant"/>
+
+    <View
+        android:id="@+id/workmate_list_separator"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="@id/workmate_restaurant"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/workmate_picture"
+        android:background="@color/text_secondary"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

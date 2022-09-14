@@ -83,7 +83,7 @@
                 android:id="@+id/restaurant_info"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#fc3f1b"
+                android:backgroundTint="@color/accent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
@@ -101,10 +101,9 @@
                         tools:text="Nom du restaurant"
                         android:textSize="16sp"
                         android:textColor="@color/white"
-                        android:drawableRight="@drawable/ic_baseline_star_outline_24"
-                        android:drawableTint="#f6e518"
                         android:drawablePadding="8dp"
-                        />
+                        app:drawableTint="@color/star"
+                        app:drawableRightCompat="@drawable/ic_baseline_star_outline_24" />
 
                     <TextView
                         android:id="@+id/restaurant_adress"
@@ -128,10 +127,10 @@
                 android:textAllCaps="true"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:textColor="#fc3f1b"
-                android:drawableTop="@drawable/ic_baseline_star_outline_24"
+                android:textColor="@color/accent"
                 android:drawablePadding="4dp"
-                android:text="@string/like_button"/>
+                android:text="@string/like_button"
+                app:drawableTopCompat="@drawable/ic_baseline_star_outline_24" />
 
             <View
                 android:id="@+id/restaurant_list_separator"
@@ -141,7 +140,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/restaurant_like_button"
-                android:background="#bbb"/>
+                android:background="@color/text_secondary"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/restaurant_recycler_view"
