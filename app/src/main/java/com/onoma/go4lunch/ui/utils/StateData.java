@@ -5,7 +5,6 @@ public class StateData<T> {
     private T data;
     private String error;
 
-    // TODO remove created status
     public StateData() {
         this.status = null;
         this.data = null;

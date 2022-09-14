@@ -69,7 +69,7 @@ public class RestaurantActivity extends AppCompatActivity {
                         adapter.submitList(listStateData.getData());
                         break;
                     case ERROR:
-                        Log.i(null, listStateData.getError());
+                        Log.e(null, listStateData.getError());
                 }
             }
         };
@@ -78,7 +78,6 @@ public class RestaurantActivity extends AppCompatActivity {
         binding.restaurantLikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("FAVORITE CLICK", "réussi");
                 mRestaurantsViewModel.initRestaurantFavorite(restaurant, true);
             }
         });
@@ -96,10 +95,10 @@ public class RestaurantActivity extends AppCompatActivity {
                 switch (restaurantSelectionResult) {
                     case ADD:
                     case CHECKED:
-                        binding.restaurantActivityCheckButton.setBackgroundTintList(ColorStateList.valueOf(Color.GREEN));
+                        binding.restaurantActivityCheckButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.selected)));
                         break;
                     case DELETE:
-                        binding.restaurantActivityCheckButton.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+                        binding.restaurantActivityCheckButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
                         break;
                 }
             }

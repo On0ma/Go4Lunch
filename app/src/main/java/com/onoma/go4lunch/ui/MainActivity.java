@@ -6,8 +6,6 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.SearchManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.Toast;
 
@@ -30,9 +29,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
@@ -79,15 +75,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     View headerView;
     HeaderNavigationDrawerBinding headerBinding;
 
-    private final double LONGITUDE = 2.356526;
-    private final double LATITUDE = 48.831351;
     private final String DEFAULT_CHANNEL_ID = "0";
 
     private double longitude;
     private double latitude;
 
     private Restaurant currentRestaurant;
-    private List<Restaurant> restaurantList = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -102,46 +95,18 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         getLastLocation();
-        Log.i("LONGITUDE BEFORE ASYNC", String.valueOf(longitude));
-        Log.i("LATITUDE BEFORE ASYNC", String.valueOf(latitude));
-
-        // Put Location in bundle
-        /*Bundle bundle = new Bundle();
-        bundle.putDouble("longitude", LONGITUDE);
-        bundle.putDouble("latitude", LATITUDE);
-
-        // Set Default Fragment
-        currentFragment = new MapFragment();
-        handleFragmentLoading(currentFragment, bundle);*/
 
         // Bind the navigation header
         headerView = binding.drawerNavigation.getHeaderView(0);
         headerBinding = HeaderNavigationDrawerBinding.bind(headerView);
 
-//        mUserViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-//        mRestaurantsViewModel = new ViewModelProvider(this).get(RestaurantsViewModel.class);
         mUserViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(UserViewModel.class);
         mRestaurantsViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(RestaurantsViewModel.class);
 
         handleDrawerNav();
-        /*handleBottomNav(bundle);*/
-        // Set a different tab by default on launch
-        // binding.bottomNavigation.setSelectedItemId(R.id.nav_list);
-
         createNotificationChannel();
 
         mUserViewModel.initUserSelection();
-
-        /*final Observer<List<Restaurant>> restaurantListObserver = new Observer<List<Restaurant>>() {
-            @Override
-            public void onChanged(List<Restaurant> restaurants) {
-                if (!restaurantList.isEmpty()) {
-                    restaurantList.clear();
-                }
-                restaurantList.addAll(restaurants);
-            }
-        };
-        mRestaurantsViewModel.getRestaurants(longitude, latitude).observe(this, restaurantListObserver);*/
 
         final Observer<StateData<User>> userObserver = new Observer<StateData<User>>() {
             @Override
@@ -165,15 +130,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             public void onChanged(StateData<Restaurant> stringStateData) {
                 switch (stringStateData.getStatus()) {
                     case SUCCESS:
-                       /* Intent intent = new Intent(getApplicationContext(), RestaurantActivity.class);
-                        intent.putExtra("restaurant", stringStateData.getData());
-                        startActivity(intent);*/
                         mUserViewModel.initUsersFromRestaurant(stringStateData.getData());
                         currentRestaurant = stringStateData.getData();
-                        Log.i("RESTAURANT ACTUEL", String.valueOf(currentRestaurant));
                         break;
                     case ERROR:
-                        // TODO Handle error;
+                        Log.e("Error user selection", stringStateData.getError());
                 }
             }
         };
@@ -193,55 +154,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                             } else {
                                 names = names + user.getName() + ", ";
                             }
-                            Log.i("USERS FROM REST", names);
                         }
                         setNotification(currentRestaurant, names);
                         break;
                     case ERROR:
-                        Log.i(null, listStateData.getError());
+                        Log.e(null, listStateData.getError());
                 }
             }
         };
         mUserViewModel.getUsersFromRestaurant().observe(this, usersFromRestaurantObserver);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.nav_menu, menu);
-        super.onCreateOptionsMenu(menu);
-
-        Log.i("TEST", "menu");
-
-        SearchView searchView = (SearchView) menu.findItem(R.id.nav_search).getActionView();
-        searchView.setQueryHint("Type here to search");
-
-        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (!b) {
-                    searchView.clearFocus();
-                }
-            }
-        });
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                Log.i("RECHERCHE", s);
-                List<Restaurant> restaurants = new ArrayList<>();
-                restaurants.addAll(Objects.requireNonNull(mRestaurantsViewModel.initRestaurants().getValue()));
-                mRestaurantsViewModel.getRestaurantsFromSearch(s, restaurants);
-                return false;
-            }
-        });
-
-        return true;
     }
 
     private void setNotification(Restaurant restaurant, String names) {
@@ -317,13 +238,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     // Show settings activity
     private void displaySettings() {
-        Log.i(null, "SETTINGS");
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     // Logout user and send back to the login page
     private void logout() {
         mUserViewModel.signOut(this).addOnSuccessListener(aVoid -> {
-            Log.i(null, "LOGOUT");
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
             finish();
         });
     }
@@ -337,18 +260,17 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     // Load the map view
                     case R.id.nav_map:
                         currentFragment = new MapFragment();
-
-                        handleFragmentLoading(currentFragment, bundle);
+                        handleFragmentLoading(currentFragment, bundle, "MAP");
                         return true;
                     // Load the list view
                     case R.id.nav_list:
                         currentFragment = new ListFragment();
-                        handleFragmentLoading(currentFragment, bundle);
+                        handleFragmentLoading(currentFragment, bundle, "LIST");
                         return true;
                     // Load the workers view
                     case R.id.nav_workmates:
                         currentFragment = new WorkmatesFragment();
-                        handleFragmentLoading(currentFragment, bundle);
+                        handleFragmentLoading(currentFragment, bundle, "WORKMATES");
                         return true;
                 }
                 return false;
@@ -356,10 +278,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         });
     }
 
-    private void handleFragmentLoading(Fragment currFrag, Bundle bundle) {
+    private void handleFragmentLoading(Fragment currFrag, Bundle bundle, String fragTag) {
         currentFragment.setArguments(bundle);
         ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_container_view, currFrag);
+        ft.replace(R.id.fragment_container_view, currFrag, fragTag);
         ft.commit();
     }
 
@@ -371,6 +293,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 Glide.with(this)
                         .load(profilePictureUrl)
                         .apply(RequestOptions.circleCropTransform())
+                        .error(R.drawable.ic_baseline_person_24)
                         .into(headerBinding.drawerProfile);
             }
             //Get email & username from User
@@ -382,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             headerBinding.drawerMail.setText(email);
         }
         else {
-            Log.i("SET USER DATA ERROR", "user is null");
+            Log.e("SET USER DATA ERROR", "user is null");
         }
     }
 
@@ -407,10 +330,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     public void onComplete(@NonNull Task<Location> task) {
                         Location location = task.getResult();
                         if (location != null) {
+                            // Get user location
                             longitude = location.getLongitude();
                             latitude = location.getLatitude();
-                            Log.i("LONGITUDE AFTER ASYNC", String.valueOf(longitude));
-                            Log.i("LATITUDE AFTER ASYNC", String.valueOf(latitude));
                             // Put Location in bundle
                             Bundle bundle = new Bundle();
                             bundle.putDouble("longitude", longitude);
@@ -418,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
                             // Set Default Fragment
                             currentFragment = new MapFragment();
-                            handleFragmentLoading(currentFragment, bundle);
+                            handleFragmentLoading(currentFragment, bundle, "MAP");
 
                             handleBottomNav(bundle);
                         }

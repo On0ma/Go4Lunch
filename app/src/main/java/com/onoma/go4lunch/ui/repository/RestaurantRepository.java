@@ -7,8 +7,6 @@ import java.util.Map;
 
 public interface RestaurantRepository {
     void getRestaurants(double longitude, double latitude, RestaurantQuery callback);
-    void getRestaurantsFromQuery(String query, RestaurantQuery callback);
-
 
     interface RestaurantQuery {
         void restaurantApiResult(List<Restaurant> restaurants);
@@ -19,10 +17,6 @@ public interface RestaurantRepository {
         void getRestaurantFavorite(RestaurantFavoriteResult result);
     }
 
-    interface RestaurantListenerQuery {
-        void restaurantListenerResult(List<Map<String, Object>> result);
-        void restaurantListenerFailure(String error);
-    }
     enum RestaurantFavoriteResult {
         ADD,
         CHECKED,

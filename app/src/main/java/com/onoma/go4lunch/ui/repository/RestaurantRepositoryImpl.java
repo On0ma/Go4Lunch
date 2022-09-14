@@ -78,6 +78,8 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
                 List<Restaurant> result = new ArrayList<>();
                 WriteBatch batch = db.batch();
 
+                Log.i("API CALL", "New api call");
+
                 for (Feature restaurant : response.body().getFeatures()) {
                     DocumentReference restaurantRef = db.collection("restaurants").document(restaurant.getId());
 
@@ -92,7 +94,7 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
                             0
                     );
 
-                    Map<String,Object> restaurantData = new HashMap<>();
+                    Map<String, Object> restaurantData = new HashMap<>();
                     restaurantData.put("id", item.getId());
                     restaurantData.put("name", item.getName());
                     restaurantData.put("adress", item.getAdress());
@@ -107,49 +109,45 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            callback.restaurantApiResult(result);
+                            List<Restaurant> restaurantListUpdate = new ArrayList<>();
+                            restaurantListUpdate.addAll(result);
+
+                            for (Restaurant restaurant : restaurantListUpdate) {
+                                db.collection("restaurants").document(restaurant.getId())
+                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                                                if (error != null) {
+                                                    return;
+                                                }
+                                                int restaurantPos = restaurantListUpdate.indexOf(restaurant);
+                                                int restaurantSelection = 0;
+                                                int restaurantFavorite = 0;
+                                                if (value.get("nbSelection") != null) {
+                                                    Double restaurantSelectionDouble = value.getDouble("nbSelection");
+                                                    restaurantSelection = restaurantSelectionDouble.intValue();
+                                                }
+                                                if (value.get("nbFavorite") != null) {
+                                                    Double restaurantFavoriteDouble = value.getDouble("nbFavorite");
+                                                    restaurantFavorite = restaurantFavoriteDouble.intValue();
+                                                }
+                                                restaurant.setNbFavorite(restaurantFavorite);
+                                                restaurant.setNbSelection(restaurantSelection);
+                                                restaurantListUpdate.set(restaurantPos, restaurant);
+                                                callback.restaurantApiResult(restaurantListUpdate);
+                                            }
+                                        });
+                            }
                         } else {
                             callback.restaurantApiFailure("Error writing restaurant data");
                         }
                     }
                 });
-                // callback.restaurantApiResult(response.body().getFeatures());
             }
+
             @Override
             public void onFailure(Call<RestaurantResponse> call, Throwable t) {
                 callback.restaurantApiFailure("Error getting restaurant data");
-            }
-        });
-    }
-
-    public void getRestaurantsFromQuery(String query, RestaurantQuery callback) {
-        db.collection("restaurants").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    List<Restaurant> restaurantFiltered = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        if (document.getString("name").contains(query)) {
-                            int nbSelection = document.getDouble("nbSelection") != null ? document.getDouble("nbSelection").intValue() : 0;
-                            int nbFavorite = document.getDouble("nbFavorite") != null ? document.getDouble("nbFavorite").intValue() : 0;
-                            Restaurant item = new Restaurant(
-                                    document.getString("id"),
-                                    document.getString("name"),
-                                    document.getString("adress"),
-                                    document.getString("type"),
-                                    document.getDouble("longitude"),
-                                    document.getDouble("latitude"),
-                                    nbSelection,
-                                    nbFavorite
-                            );
-                            restaurantFiltered.add(item);
-                        }
-                    }
-                    Log.i("RESTAURANT FILTERED", String.valueOf(restaurantFiltered));
-                    callback.restaurantApiResult(restaurantFiltered);
-                } else {
-                    callback.restaurantApiFailure("Error getting documents");
-                }
             }
         });
     }
@@ -164,24 +162,24 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
                 db.collection("restaurants").document(restaurant.getId()).collection("users").document(currentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                      if (task.isSuccessful()) {
-                          DocumentSnapshot document = task.getResult();
-                          // If favorite is set then we display or remove it
-                          if (document.exists()) {
-                              // We remove the favorite for the update
-                             if (update) {
-                                 deleteRestaurantFavorite(restaurant, callback);
-                             // We only display it when we first launch the restaurant activity
-                             } else {
-                                 callback.getRestaurantFavorite(RestaurantFavoriteResult.CHECKED);
-                             }
-                          // if user isn't present then we add him to the restaurant favorite
-                          } else {
-                              if (update) {
-                                  addRestaurantFavorite(restaurant, callback);
-                              }
-                          }
-                      }
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            // If favorite is set then we display or remove it
+                            if (document.exists()) {
+                                // We remove the favorite for the update
+                                if (update) {
+                                    deleteRestaurantFavorite(restaurant, callback);
+                                    // We only display it when we first launch the restaurant activity
+                                } else {
+                                    callback.getRestaurantFavorite(RestaurantFavoriteResult.CHECKED);
+                                }
+                                // if user isn't present then we add him to the restaurant favorite
+                            } else {
+                                if (update) {
+                                    addRestaurantFavorite(restaurant, callback);
+                                }
+                            }
+                        }
                     }
                 });
             }
@@ -218,53 +216,5 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
                 });
             }
         });
-    }
-
-    public void restaurantListener(RestaurantListenerQuery callback) {
-        db.collection("restaurants")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value,
-                                        @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            callback.restaurantListenerFailure("Error getting data");
-                            return;
-                        }
-                        List<Map<String, Object>> restaurantListenerList = new ArrayList<>();
-                        for (QueryDocumentSnapshot doc : value) {
-                            Double restaurantSelection = doc.getDouble("nbSelection");
-                            Double restaurantFavorite = doc.getDouble("nbFavorite");
-                            Map<String, Object> restaurantListenerData = new HashMap<>();
-                            restaurantListenerData.put("restaurantSelection", restaurantSelection);
-                            restaurantListenerData.put("restaurantFavorite", restaurantFavorite);
-                            restaurantListenerData.put("id", doc.getString("id"));
-                            restaurantListenerList.add(restaurantListenerData);
-                        }
-                        callback.restaurantListenerResult(restaurantListenerList);
-                    }
-                });
-    }
-
-    public Map<String, Double> restaurantListenerTest(Restaurant restaurant) {
-        Map<String, Double> restaurantListenerData = new HashMap<>();
-        db.collection("restaurants").document(restaurant.getId())
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                        if (error != null) {
-                            return;
-                        }
-                        Double restaurantSelection = value.getDouble("nbSelection");
-                        Double restaurantFavorite = value.getDouble("nbFavorite");
-                        restaurantListenerData.put("restaurantSelection", restaurantSelection);
-                        restaurantListenerData.put("restaurantFavorite", restaurantFavorite);
-                    }
-                });
-        return restaurantListenerData;
-    }
-
-    public interface RestaurantListenerTestQuery {
-        void restaurantListenerResult(Map<String, Double> result);
-        void restaurantListenerFailure(String error);
     }
 }

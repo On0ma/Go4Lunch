@@ -3,23 +3,32 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/drawable/ic_baseline_check_circle_24.xml" value="0.4885" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/drawable/ic_baseline_local_dining_24.xml" value="0.366" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/drawable/ic_baseline_location_on_24.xml" value="0.366" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/drawable/ic_baseline_my_location_24.xml" value="0.366" />
+        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/drawable/ic_baseline_people_24.xml" value="0.371" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.2285" />
+        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/drawable/ic_baseline_person_24_black.xml" value="0.371" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/drawable/ic_baseline_star_24.xml" value="0.2285" />
+        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/drawable/location.xml" value="0.4885" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/drawable/location_pin.xml" value="0.366" />
+        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/drawable/location_pin_selected.xml" value="0.4885" />
+        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/drawable/sort.xml" value="0.371" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/layout/activity_login.xml" value="0.16802536231884058" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/layout/activity_main.xml" value="0.5" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/layout/activity_restaurant.xml" value="0.33" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/layout/activity_restaurant_item.xml" value="0.16802536231884058" />
+        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/layout/activity_settings.xml" value="0.67" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/layout/fragment_list.xml" value="0.1956521739130435" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/layout/fragment_list_item.xml" value="0.33" />
-        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/layout/fragment_map.xml" value="0.12552083333333333" />
-        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/layout/fragment_workmates.xml" value="0.1956521739130435" />
+        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/layout/fragment_map.xml" value="0.33" />
+        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/layout/fragment_workmates.xml" value="0.5" />
+        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/layout/fragment_workmates_item.xml" value="0.5541666666666667" />
+        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/layout/header_navigation_drawer.xml" value="0.5541666666666667" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.12552083333333333" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/menu/nav_menu.xml" value="0.25" />
-        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/menu/navigation_drawer.xml" value="0.12552083333333333" />
+        <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/menu/navigation_drawer.xml" value="0.5" />
         <entry key="..\:/Users/Enzo/Documents/Android Projects/Go4Lunch/app/src/main/res/xml/searchable.xml" value="0.12291666666666666" />
         <entry key="..\:/Users/monte/Documents/Enzo Formation/Go4Lunch/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1" />
         <entry key="..\:/Users/monte/Documents/Enzo Formation/Go4Lunch/app/src/main/res/drawable/ic_baseline_view_list_24.xml" value="0.1" />

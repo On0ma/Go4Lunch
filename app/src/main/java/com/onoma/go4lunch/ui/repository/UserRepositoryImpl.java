@@ -1,6 +1,7 @@
 package com.onoma.go4lunch.ui.repository;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -111,6 +112,12 @@ public class UserRepositoryImpl implements UserRepository {
                                 document.getString("email"),
                                 document.getString("photoUrl")
                         );
+                        if (document.getString("restaurantSelection") != null) {
+                            newUser.setRestaurantId(document.getString("restaurantSelection"));
+                        } else {
+                            newUser.setRestaurantId("");
+                        }
+                        Log.i("USER INFO", String.valueOf(newUser));
                         userList.add(newUser);
                     }
                     callback.getAllUsersSuccess(userList);
@@ -148,7 +155,6 @@ public class UserRepositoryImpl implements UserRepository {
         });
     }
 
-    // TODO remove boolean and update methods
     // TODO Add method to interface
     public void updateRestaurantSelection(Restaurant restaurant, Boolean update, RestaurantSelectionQuery callback) {
         getUsersCollection().document(getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -281,6 +287,10 @@ public class UserRepositoryImpl implements UserRepository {
 
     public Task<Void> signOut(Context context){
         return AuthUI.getInstance().signOut(context);
+    }
+
+    public Task<Void> deleteUser(Context context) {
+        return AuthUI.getInstance().delete(context);
     }
 
     @Nullable

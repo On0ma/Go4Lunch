@@ -1,8 +1,6 @@
 package com.onoma.go4lunch.ui;
 
-import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,25 +9,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.onoma.go4lunch.R;
 import com.onoma.go4lunch.databinding.FragmentListItemBinding;
 import com.onoma.go4lunch.model.Restaurant;
 
-import org.w3c.dom.Text;
-
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter.ViewHolder> {
@@ -59,21 +47,33 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
         holder.bindTo(getItem(position), callback);
     }
 
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position, List<Object> payloads) {
+        if (!payloads.isEmpty()) {
+            Log.i("PAYLOAD", String.valueOf(payloads));
+        }
+        holder.bindTo(getItem(position), callback);
+    }
+
 
     public static final DiffUtil.ItemCallback<Restaurant> DIFF_CALLBACK = new DiffUtil.ItemCallback<Restaurant>() {
         @Override
         public boolean areItemsTheSame(@NonNull Restaurant oldItem, @NonNull Restaurant newItem) {
+//            Log.i("areItemsTheSame", String.valueOf(Objects.equals(oldItem.getId(), newItem.getId())));
             return Objects.equals(oldItem.getId(), newItem.getId());
         }
 
         @Override
         public boolean areContentsTheSame(@NonNull Restaurant oldItem, @NonNull Restaurant newItem) {
-            return oldItem.equals(newItem);
+//            Log.i("areContentsTheSame", String.valueOf(oldItem.equals(newItem)));
+            Log.i("OLD SELECTION", oldItem.getName() + String.valueOf(oldItem.getNbSelection()));
+            Log.i("NEW SELECTION", newItem.getName() + String.valueOf(newItem.getNbSelection()));
+            return oldItem.getNbSelection() == newItem.getNbSelection();
         }
 
         @Override
         public Object getChangePayload(@NonNull Restaurant oldItem, @NonNull Restaurant newItem) {
-            Log.i(null,"changed");
+//            Log.i("CHANGED PAYLOAD", String.valueOf(newItem));
             return null;
         }
     };
@@ -99,6 +99,7 @@ public class RestaurantAdapter extends ListAdapter<Restaurant, RestaurantAdapter
         }
 
         public void bindTo(Restaurant restaurant, RestaurantDisplayCallback callback) {
+            Log.i("Restaurant Bind", restaurant.toString());
             restaurantName.setText(restaurant.getName());
             restaurantAdress.setText(restaurant.getAdress());
             restaurantDistance.setText(restaurant.getDistance(locationLongitude, locationLatitude));

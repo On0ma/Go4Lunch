@@ -7,16 +7,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.onoma.go4lunch.model.Restaurant;
 import com.onoma.go4lunch.model.User;
 import com.onoma.go4lunch.ui.repository.UserRepositoryImpl;
 import com.onoma.go4lunch.ui.utils.StateData;
 import com.onoma.go4lunch.ui.utils.StateLiveData;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserViewModel extends ViewModel {
@@ -91,7 +87,6 @@ public class UserViewModel extends ViewModel {
         loadUsersFromRestaurant(restaurant);
     }
 
-    // TODO load user from init and listen to change with firestore listeners
     public LiveData<StateData<List<User>>> getUsersFromRestaurant() {
         return usersFromRestaurantListLiveData;
     }
@@ -108,10 +103,6 @@ public class UserViewModel extends ViewModel {
                 usersFromRestaurantListLiveData.postError(error);
             }
         });
-    }
-
-    public Task<Void> signOut(Context context){
-        return mUserRepository.signOut(context);
     }
 
     public void initRestaurantSelection(Restaurant restaurant, Boolean update) {
@@ -151,5 +142,13 @@ public class UserViewModel extends ViewModel {
                 currentUserChoice.postError(error);
             }
         });
+    }
+
+    public Task<Void> signOut(Context context){
+        return mUserRepository.signOut(context);
+    }
+
+    public Task<Void> deleteUser(Context context) {
+        return mUserRepository.deleteUser(context);
     }
 }

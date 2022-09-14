@@ -8,6 +8,7 @@ public class User {
     private String name;
     private String email;
     private String photoUrl;
+    private String restaurantId;
 
     public User(String uid, String name, String email, String photoUrl) {
         this.uid = uid;
@@ -48,13 +49,22 @@ public class User {
         this.photoUrl = photoUrl;
     }
 
+    public String getRestaurantId() {
+        return restaurantId;
+    }
+
+    public void setRestaurantId(String restaurantId) {
+        this.restaurantId = restaurantId;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "uid='" + uid + '\'' +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", photoUrl=" + photoUrl +
+                ", photoUrl='" + photoUrl + '\'' +
+                ", restaurantId='" + restaurantId + '\'' +
                 '}';
     }
 

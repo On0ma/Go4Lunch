@@ -2,7 +2,6 @@ package com.onoma.go4lunch.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -12,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.facebook.FacebookSdk;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
@@ -26,7 +24,6 @@ import com.onoma.go4lunch.databinding.ActivityLoginBinding;
 import com.onoma.go4lunch.ui.viewModel.UserViewModel;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
@@ -42,8 +39,6 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-
-        // startSignInActivity();
 
         mUserViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(UserViewModel.class);
 
@@ -75,8 +70,6 @@ public class LoginActivity extends AppCompatActivity {
         binding.loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i(null, "LOGIN");
-                // startSignInActivity();
                 signInLauncher.launch(signInIntent);
             }
         });
@@ -113,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
     private void startMapActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+        finish();
     }
 
     @Override

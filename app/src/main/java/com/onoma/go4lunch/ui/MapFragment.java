@@ -8,11 +8,15 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -32,10 +36,12 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
 import com.onoma.go4lunch.R;
 import com.onoma.go4lunch.databinding.FragmentMapBinding;
 import com.onoma.go4lunch.model.Restaurant;
+import com.onoma.go4lunch.ui.utils.StateData;
 import com.onoma.go4lunch.ui.viewModel.RestaurantsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MapFragment extends Fragment {
 
@@ -53,17 +59,27 @@ public class MapFragment extends Fragment {
         binding = FragmentMapBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        setHasOptionsMenu(true);
+
         double longitude = getArguments().getDouble("longitude");
         double latitude = getArguments().getDouble("latitude");
-        Log.i("longitude", String.valueOf(longitude));
 
         mRestaurantsViewModel = new ViewModelProvider(requireActivity(), ViewModelFactory.getInstance()).get(RestaurantsViewModel.class);
         mapview = binding.mapView;
 
-        final Observer<List<Restaurant>> restaurantListObserver = new Observer<List<Restaurant>>() {
+        final Observer<StateData<List<Restaurant>>> restaurantListObserver = new Observer<StateData<List<Restaurant>>>() {
             @Override
-            public void onChanged(List<Restaurant> restaurants) {
-                onMapReady(restaurants, longitude, latitude);
+            public void onChanged(StateData<List<Restaurant>> listStateData) {
+                switch(listStateData.getStatus()) {
+                    case SUCCESS:
+                        List<Restaurant> newList = new ArrayList<>();
+                        newList.addAll(listStateData.getData());
+                        onMapReady(newList, longitude, latitude);
+                        break;
+                    case ERROR:
+                        Log.e("Restaurant list error", listStateData.getError());
+                        break;
+                }
             }
         };
         mRestaurantsViewModel.getRestaurants(longitude, latitude).observe(getViewLifecycleOwner(), restaurantListObserver);
@@ -76,6 +92,34 @@ public class MapFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.nav_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        MenuItem searchIcon = menu.findItem(R.id.nav_search);
+        MenuItem sortIcon = menu.findItem(R.id.nav_sort);
+        sortIcon.setVisible(false);
+
+        SearchView searchView = (SearchView) searchIcon.getActionView();
+        searchView.setQueryHint(getResources().getString(R.string.menu_search_hint));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                List<Restaurant> restaurants = new ArrayList<>();
+                restaurants.addAll(Objects.requireNonNull(mRestaurantsViewModel.initRestaurants().getValue().getData()));
+                mRestaurantsViewModel.getRestaurantsFromSearch(s, restaurants);
+                return false;
+            }
+        });
     }
 
     private void onMapReady(List<Restaurant> restaurants, double longitude, double latitude) {

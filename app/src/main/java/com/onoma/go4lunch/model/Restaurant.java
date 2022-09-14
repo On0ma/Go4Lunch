@@ -107,7 +107,7 @@ public class Restaurant implements Serializable {
         return null;
     }
 
-    @Override
+    /*@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -118,7 +118,7 @@ public class Restaurant implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, adress, type, longitude, latitude, nbSelection, nbFavorite);
-    }
+    }*/
 
     @Override
     public String toString() {
